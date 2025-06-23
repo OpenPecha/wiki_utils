@@ -56,5 +56,41 @@ class TestUpdateMainspacePageWithLinks(unittest.TestCase):
         self.assertEqual(mock_page_instance.text, expected_text)
 
 
+class TestSplitByPageBlocks(unittest.TestCase):
+    def test_multiple_page_blocks(self):
+        from wiki_utils.wikisource.set_page_tag_link import split_by_page_blocks
+
+        text = (
+            "[[Page:TestBook.pdf/1|Page no: 1]]Content of page 1."
+            "[[Page:TestBook.pdf/2|Page no: 2]]Content of page 2."
+            "[[Page:TestBook.pdf/3|Page no: 3]]Content of page 3."
+        )
+        blocks = split_by_page_blocks(text)
+        self.assertEqual(len(blocks), 3)
+        self.assertTrue(blocks[0].startswith("[[Page:TestBook.pdf/1|Page no: 1]]"))
+        self.assertTrue(blocks[1].startswith("[[Page:TestBook.pdf/2|Page no: 2]]"))
+        self.assertTrue(blocks[2].startswith("[[Page:TestBook.pdf/3|Page no: 3]]"))
+
+
+class TestExtractPageNumbers(unittest.TestCase):
+    def test_extract_from_blocks(self):
+        from wiki_utils.wikisource.set_page_tag_link import extract_page_numbers
+
+        blocks = [
+            "[[Page:TestBook.pdf/1|Page no: 1]]Content of page 1.",
+            "[[Page:TestBook.pdf/2|Page no: 2]]Content of page 2.",
+            "[[Page:TestBook.pdf/3|Page no: 3]]Content of page 3.",
+        ]
+        nums = extract_page_numbers(blocks)
+        self.assertEqual(nums, [1, 2, 3])
+
+    def test_no_page_numbers(self):
+        from wiki_utils.wikisource.set_page_tag_link import extract_page_numbers
+
+        blocks = ["No page number here.", "Still nothing."]
+        nums = extract_page_numbers(blocks)
+        self.assertEqual(nums, [])
+
+
 if __name__ == "__main__":
     unittest.main()
