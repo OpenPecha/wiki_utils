@@ -1,6 +1,6 @@
 import pytest
 
-from wiki_utils.wikidata import get_qid
+from wiki_utils.wikidata import WikiDataSearch
 
 # These are real BDRC IDs and their expected QIDs as of May 2025.
 # If Wikidata changes, these tests may need updating.
@@ -16,5 +16,5 @@ from wiki_utils.wikidata import get_qid
     ],
 )
 def test_get_qid(work_id, expected_qid):
-    result = get_qid(work_id)
+    result = WikiDataSearch().get_qid(work_id)
     assert result == expected_qid
