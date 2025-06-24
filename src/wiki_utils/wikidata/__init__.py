@@ -7,6 +7,10 @@ import requests
 
 class WikiDataSearch:
     def __init__(self):
+
+        self.sparql_url = "https://query.wikidata.org/sparql"
+        self.entity_url = "https://www.wikidata.org/wiki/Special:EntityData"
+
         self.user_agent = (
             "OpenPecha/1.0 "
             "(https://github.com/OpenPecha/wikidata_pipeline; "
@@ -35,14 +39,16 @@ class WikiDataSearch:
         """
         query = f"""
         SELECT ?item WHERE {{
-        ?item wdt:P2477 \"{work_id}\" .   #noqa
+        ?item wdt:P2477 \"{work_id}\" .
         }}     #noqa
         """
-        url = "https://query.wikidata.org/sparql"
 
         try:
             response = requests.get(
-                url, params={"query": query}, headers=self.headers, timeout=10
+                self.sparql_url,
+                params={"query": query},
+                headers=self.headers,
+                timeout=10,
             )
             response.raise_for_status()
             data = response.json()
@@ -60,7 +66,7 @@ class WikiDataSearch:
         Returns the Wikidata entity data for a given QID.
         If not found, returns None.
         """
-        url = f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json"  # noqa
+        url = f"{self.entity_url}/{qid}.json"
 
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
