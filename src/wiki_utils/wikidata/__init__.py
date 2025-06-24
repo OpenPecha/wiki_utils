@@ -1,16 +1,19 @@
 import json
+import logging
 from typing import Any, Dict, List, Optional
 
 import pywikibot
 import requests
 
 
-class WikiDataSearch:
-    def __init__(self):
-
-        self.sparql_url = "https://query.wikidata.org/sparql"
-        self.entity_url = "https://www.wikidata.org/wiki/Special:EntityData"
-
+class WikidataClient:
+    def __init__(
+        self,
+        sparql_url: str = "https://query.wikidata.org/sparql",
+        entity_url: str = "https://www.wikidata.org/wiki/Special:EntityData",
+    ):
+        self.sparql_url = sparql_url
+        self.entity_url = entity_url
         self.user_agent = (
             "OpenPecha/1.0 "
             "(https://github.com/OpenPecha/wikidata_pipeline; "
@@ -18,31 +21,28 @@ class WikiDataSearch:
             "python-requests/2.32.3"
         )
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
+        logging.basicConfig(level=logging.INFO)
 
     @staticmethod
-    def login():
+    def login_to_wikidata() -> pywikibot.Site:
         """
-        Logs in to Wikidata using Pywikibot.
-
-        Returns:
-        - site: Pywikibot Site object for Wikidata.
+        Log in to Wikidata using Pywikibot and return the site object.
         """
         site = pywikibot.Site("wikidata", "wikidata")
-        site.login()  # Log into Wikidata
-        print(f"Logged in to Wikidata as {site.username()}")
+        site.login()
+        logging.info(f"Logged in to Wikidata as {site.username()}")
         return site
 
-    def get_qid(self, work_id: str) -> Optional[str]:
+    def get_qid_by_bdrc_work_id(self, bdrc_work_id: str) -> Optional[str]:
         """
-        Returns the Wikidata QID for a given BDRC work_id.
-        If not found, returns None.
+        Retrieve the Wikidata QID for a given BDRC work ID.
+        Returns None if not found or on error.
         """
         query = f"""
         SELECT ?item WHERE {{
-        ?item wdt:P2477 \"{work_id}\" .
-        }}     #noqa
+        ?item wdt:P2477 \"{bdrc_work_id}\" .
+        }}
         """
-
         try:
             response = requests.get(
                 self.sparql_url,
@@ -56,44 +56,48 @@ class WikiDataSearch:
             if results:
                 return results[0]["item"]["value"].split("/")[-1]
             else:
-                print(f"No Wikidata QID found for BDRC work_id: {work_id}")
+                logging.warning(
+                    f"No Wikidata QID found for BDRC work_id: {bdrc_work_id}"
+                )
         except Exception as e:
-            print(f"Error fetching QID for {work_id}: {e}")
+            logging.error(f"Error fetching QID for {bdrc_work_id}: {e}")
         return None
 
-    def get_wikidata_entity(self, qid: str) -> Optional[Dict[str, Any]]:
+    def fetch_entity_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
         """
-        Returns the Wikidata entity data for a given QID.
-        If not found, returns None.
+        Fetch the Wikidata entity data for a given QID.
+        Returns None if not found or on error.
         """
         url = f"{self.entity_url}/{qid}.json"
-
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            print(f"Error fetching Wikidata entity for QID {qid}: {e}")
+            logging.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
             return None
 
-    def get_wikidata_metadata(
-        self, work_id: str, language: str = "en", properties: Optional[List[str]] = None
+    def get_entity_metadata_by_bdrc_work_id(
+        self,
+        bdrc_work_id: str,
+        language: str = "en",
+        properties: Optional[List[str]] = None,
     ) -> Optional[Dict[str, Any]]:
         """
-        Combines the above functions to return useful metadata for a BDRC work_id.
+        Retrieve useful metadata for a BDRC work ID, including label, description, aliases, and specified properties.
         Returns None if not found or on error.
         """
-        qid = self.get_qid(work_id)
+        qid = self.get_qid_by_bdrc_work_id(bdrc_work_id)
         if not qid:
-            print(f"No QID found for work_id: {work_id}")
+            logging.warning(f"No QID found for work_id: {bdrc_work_id}")
             return None
-        entity = self.get_wikidata_entity(qid)
+        entity = self.fetch_entity_by_qid(qid)
         if not entity:
-            print(f"No Wikidata entity found for QID: {qid}")
+            logging.warning(f"No Wikidata entity found for QID: {qid}")
             return None
-        return self.extract_useful_fields_from_entity(entity, qid, language, properties)
+        return self.extract_entity_metadata(entity, qid, language, properties)
 
-    def extract_useful_fields_from_entity(
+    def extract_entity_metadata(
         self,
         entity_json: Dict[str, Any],
         qid: str,
@@ -101,7 +105,7 @@ class WikiDataSearch:
         properties: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
-        Extracts label, description, aliases, and specified property values from Wikidata entity JSON.
+        Extract label, description, aliases, and specified property values from Wikidata entity JSON.
         Handles missing fields gracefully.
         """
         try:
@@ -117,7 +121,6 @@ class WikiDataSearch:
                 "description": description,
                 "aliases": aliases,
             }
-            # Extract specified properties if provided
             if properties:
                 result["properties"] = {}
                 claims = entity.get("claims", {})
@@ -128,7 +131,6 @@ class WikiDataSearch:
                             mainsnak = claim.get("mainsnak", {})
                             datavalue = mainsnak.get("datavalue", {})
                             value = datavalue.get("value")
-                            # For entity references, extract the QID
                             if isinstance(value, dict) and "id" in value:
                                 prop_values.append(value["id"])
                             else:
@@ -136,20 +138,21 @@ class WikiDataSearch:
                     result["properties"][prop] = prop_values
             return result
         except Exception as e:
-            print(f"Error extracting fields from entity for QID {qid}: {e}")
+            logging.error(f"Error extracting fields from entity for QID {qid}: {e}")
             return {"qid": qid, "label": "", "description": "", "aliases": []}
 
 
 if __name__ == "__main__":
-    wiki_data = WikiDataSearch()
+    wikidata_client = WikidataClient()
 
     work_id = "WA0RK0529"
-    metadata = wiki_data.get_wikidata_metadata(
+    metadata = wikidata_client.get_entity_metadata_by_bdrc_work_id(
         work_id, language="en", properties=["P31", "P4969", "P1476"]
     )
     print(json.dumps(metadata, indent=2, ensure_ascii=False))
+
     author_id = "P1215"
-    author_metadata = wiki_data.get_wikidata_metadata(
+    author_metadata = wikidata_client.get_entity_metadata_by_bdrc_work_id(
         author_id, language="en", properties=["P31", "P4969", "P1476"]
     )
     print(json.dumps(author_metadata, indent=2, ensure_ascii=False))
