@@ -5,7 +5,7 @@ import requests
 
 from wiki_utils.utils.logger import get_logger
 
-logger = get_logger
+logger = get_logger(__name__)
 
 
 class WikidataClient:
