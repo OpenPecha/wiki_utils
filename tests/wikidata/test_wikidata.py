@@ -16,5 +16,5 @@ from wiki_utils.wikidata import WikidataClient
     ],
 )
 def test_get_qid(work_id, expected_qid):
-    result = WikidataClient().get_qid(work_id)
+    result = WikidataClient().get_qid_by_bdrc_work_id(work_id)
     assert result == expected_qid
