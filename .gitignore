@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+pywikibot-Ganga4364.lwp
+pywikibot.lwp
+throttle.ctrl
+user-config.py
+user-password.py
+
 # C extensions
 *.so
 
