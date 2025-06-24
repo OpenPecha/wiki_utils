@@ -6,6 +6,15 @@ import requests
 
 
 class WikiDataSearch:
+    def __init__(self):
+        self.user_agent = (
+            "OpenPecha/1.0 "
+            "(https://github.com/OpenPecha/wikidata_pipeline; "
+            "openpecha.dev@gmail.com) "
+            "python-requests/2.32.3"
+        )
+        self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
+
     @staticmethod
     def login():
         """
@@ -30,18 +39,10 @@ class WikiDataSearch:
         }}     #noqa
         """
         url = "https://query.wikidata.org/sparql"
-        # Add a proper User-Agent header following Wikimedia's policy
-        # See: https://meta.wikimedia.org/wiki/User-Agent_policy
-        user_agent = (
-            "OpenPecha/1.0 "
-            "(https://github.com/OpenPecha/wikidata_pipeline; "
-            "openpecha.dev@gmail.com) "
-            "python-requests/2.32.3"
-        )
-        headers = {"Accept": "application/json", "User-Agent": user_agent}
+
         try:
             response = requests.get(
-                url, params={"query": query}, headers=headers, timeout=10
+                url, params={"query": query}, headers=self.headers, timeout=10
             )
             response.raise_for_status()
             data = response.json()
@@ -60,16 +61,9 @@ class WikiDataSearch:
         If not found, returns None.
         """
         url = f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json"  # noqa
-        # Add a proper User-Agent header following Wikimedia's policy
-        user_agent = (
-            "OpenPecha/1.0 "
-            "(https://github.com/OpenPecha/wikidata_pipeline; "
-            "openpecha.dev@gmail.com) "
-            "python-requests/2.32.3"
-        )
-        headers = {"Accept": "application/json", "User-Agent": user_agent}
+
         try:
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
             return response.json()
         except Exception as e:
