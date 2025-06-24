@@ -141,18 +141,40 @@ class WikidataClient:
             logging.error(f"Error extracting fields from entity for QID {qid}: {e}")
             return {"qid": qid, "label": "", "description": "", "aliases": []}
 
+    def search_entities(
+        self, search_text: str, language: str = "en", limit: int = 50
+    ) -> List[Dict[str, Any]]:
+        """
+        Search for entities in Wikidata matching the given search_text.
+
+        :param search_text: The text to search for.
+        :param language: Language to search in (e.g., 'en', 'bo').
+        :param limit: Maximum number of results (max 50).
+        :return: A list of matching entities with basic metadata.
+        """
+        search_url = "https://www.wikidata.org/w/api.php"
+        search_params = {
+            "action": "wbsearchentities",
+            "format": "json",
+            "language": language,
+            "search": search_text,
+            "limit": str(limit),
+        }
+        try:
+            response = requests.get(
+                search_url, params=search_params, headers=self.headers, timeout=10
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data.get("search", [])
+        except Exception as e:
+            logging.error(f"Error searching Wikidata for '{search_text}': {e}")
+            return []
+
 
 if __name__ == "__main__":
-    wikidata_client = WikidataClient()
+    client = WikidataClient()
 
-    work_id = "WA0RK0529"
-    metadata = wikidata_client.get_entity_metadata_by_bdrc_work_id(
-        work_id, language="en", properties=["P31", "P4969", "P1476"]
-    )
-    print(json.dumps(metadata, indent=2, ensure_ascii=False))
-
-    author_id = "P1215"
-    author_metadata = wikidata_client.get_entity_metadata_by_bdrc_work_id(
-        author_id, language="en", properties=["P31", "P4969", "P1476"]
-    )
-    print(json.dumps(author_metadata, indent=2, ensure_ascii=False))
+    search_text = "ཤེས་རབ་སྙིང་པོ།"
+    res = client.search_entities(search_text)
+    print(res)
