@@ -1,9 +1,11 @@
-import json
-import logging
 from typing import Any, Dict, List, Optional
 
 import pywikibot
 import requests
+
+from wiki_utils.utils.logger import get_logger
+
+logger = get_logger
 
 
 class WikidataClient:
@@ -21,7 +23,6 @@ class WikidataClient:
             "python-requests/2.32.3"
         )
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
-        logging.basicConfig(level=logging.INFO)
 
     @staticmethod
     def login_to_wikidata() -> pywikibot.Site:
@@ -30,7 +31,7 @@ class WikidataClient:
         """
         site = pywikibot.Site("wikidata", "wikidata")
         site.login()
-        logging.info(f"Logged in to Wikidata as {site.username()}")
+        logger.info(f"Logged in to Wikidata as {site.username()}")
         return site
 
     def get_qid_by_bdrc_work_id(self, bdrc_work_id: str) -> Optional[str]:
@@ -56,11 +57,11 @@ class WikidataClient:
             if results:
                 return results[0]["item"]["value"].split("/")[-1]
             else:
-                logging.warning(
+                logger.warning(
                     f"No Wikidata QID found for BDRC work_id: {bdrc_work_id}"
                 )
         except Exception as e:
-            logging.error(f"Error fetching QID for {bdrc_work_id}: {e}")
+            logger.error(f"Error fetching QID for {bdrc_work_id}: {e}")
         return None
 
     def fetch_entity_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
@@ -74,7 +75,7 @@ class WikidataClient:
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            logging.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
+            logger.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
             return None
 
     def get_entity_metadata_by_bdrc_work_id(
@@ -89,11 +90,11 @@ class WikidataClient:
         """
         qid = self.get_qid_by_bdrc_work_id(bdrc_work_id)
         if not qid:
-            logging.warning(f"No QID found for work_id: {bdrc_work_id}")
+            logger.warning(f"No QID found for work_id: {bdrc_work_id}")
             return None
         entity = self.fetch_entity_by_qid(qid)
         if not entity:
-            logging.warning(f"No Wikidata entity found for QID: {qid}")
+            logger.warning(f"No Wikidata entity found for QID: {qid}")
             return None
         return self.extract_entity_metadata(entity, qid, language, properties)
 
@@ -138,7 +139,7 @@ class WikidataClient:
                     result["properties"][prop] = prop_values
             return result
         except Exception as e:
-            logging.error(f"Error extracting fields from entity for QID {qid}: {e}")
+            logger.error(f"Error extracting fields from entity for QID {qid}: {e}")
             return {"qid": qid, "label": "", "description": "", "aliases": []}
 
     def search_entities(
@@ -168,7 +169,7 @@ class WikidataClient:
             data = response.json()
             return data.get("search", [])
         except Exception as e:
-            logging.error(f"Error searching Wikidata for '{search_text}': {e}")
+            logger.error(f"Error searching Wikidata for '{search_text}': {e}")
             return []
 
 
