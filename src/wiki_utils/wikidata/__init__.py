@@ -227,3 +227,64 @@ class WikidataClient:
         except Exception as e:
             logger.error(f"Error searching Wikidata for '{search_text}': {e}")
             return []
+
+    def walk(self, qid: str, _visited=None, _edges=None):
+        """
+        Recursively walk through 'has_edition' and 'derivative_work' relationships,
+        storing only the QID pairs and their relationship type.
+        Returns a list of dicts: { 'from': ..., 'to': ..., 'relationship': ... }
+        """
+        if _visited is None:
+            _visited = set()
+        if _edges is None:
+            _edges = []
+        if qid in _visited:
+            return _edges
+        _visited.add(qid)
+
+        entity_metadata = self.get_entity_metadata_by_qid(qid)
+        if not entity_metadata:
+            return _edges
+        parsed_metadata = self.parse_entity_metadata(entity_metadata)
+
+        # Process 'has_edition' relationships
+        for edition_qid in parsed_metadata.get("has_edition", []):
+            if (
+                edition_qid
+                and isinstance(edition_qid, str)
+                and edition_qid.startswith("Q")
+            ):
+                _edges.append(
+                    {"from": qid, "to": edition_qid, "relationship": "has_edition"}
+                )
+                self.walk(edition_qid, _visited, _edges)
+
+        # Process 'derivative_work' relationships
+        for derivative_qid in parsed_metadata.get("derivative_work", []):
+            if (
+                derivative_qid
+                and isinstance(derivative_qid, str)
+                and derivative_qid.startswith("Q")
+            ):
+                _edges.append(
+                    {
+                        "from": qid,
+                        "to": derivative_qid,
+                        "relationship": "derivative_work",
+                    }
+                )
+                self.walk(derivative_qid, _visited, _edges)
+
+        return _edges
+
+
+if __name__ == "__main__":
+    from wiki_utils.utils import write_json
+    from wiki_utils.wikidata import WikidataClient
+
+    qid = "Q622868"
+
+    client = WikidataClient()
+    res = client.walk(qid)
+
+    write_json(res, "heart_sutra_walk.json")
