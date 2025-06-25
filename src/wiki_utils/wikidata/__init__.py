@@ -65,8 +65,7 @@ class WikidataClient:
 
     def get_qid_by_bdrc_work_id(self, bdrc_work_id: str) -> Optional[str]:
         """
-        Retrieve the Wikidata QID for a given BDRC work ID.
-        Returns None if not found or on error.
+        Get Wiki Data qid for a given BDRC work id
         """
         query = f"""
         SELECT ?item WHERE {{
@@ -95,7 +94,7 @@ class WikidataClient:
 
     def get_entity_metadata_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
         """
-        Get Wiki Data Entity metadata by qid
+        Get Wiki Data Entity metadata for a given qid
         """
         url = f"{self.entity_url}/{qid}.json"
         try:
@@ -112,17 +111,19 @@ class WikidataClient:
         self, bdrc_work_id: str
     ) -> Optional[Dict[str, Any]]:
         """
-        Get Wiki Data Entity metadata by bdrd work id
+        Get Wiki Data Entity metadata for a given BDRC work id.
         """
         qid = self.get_qid_by_bdrc_work_id(bdrc_work_id)
-        if not qid:
-            logger.warning(f"No QID found for work_id: {bdrc_work_id}")
+        if qid is None:
+            logger.warning(f"No QID found for BDRC work ID: {bdrc_work_id}")
             return None
-        entity = self.get_entity_metadata_by_qid(qid)
-        if not entity:
+
+        entity_metadata = self.get_entity_metadata_by_qid(qid)
+        if entity_metadata is None:
             logger.warning(f"No Wikidata entity found for QID: {qid}")
             return None
-        return entity
+
+        return entity_metadata
 
     def parse_entity_metadata(self, metadata: Dict) -> Dict[str, Any]:
         """
