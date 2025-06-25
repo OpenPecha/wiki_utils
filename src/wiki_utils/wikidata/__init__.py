@@ -24,6 +24,35 @@ class WikidataClient:
         )
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
 
+        self.property_id_to_name = {
+            "P373": "commons_category_link",
+            "P646": "freebase_id",
+            "P31": "instance_of",
+            "P435": "musicbrainz_work_id",
+            "P3417": "quora_topic_id",
+            "P1476": "title",
+            "P1417": "encyclopaedia_britannica_online_id",
+            "P747": "has_edition",
+            "P2581": "babelnet_id",
+            "P18": "image",
+            "P8885": "un_locode",
+            "P10": "video",
+            "P10565": "encyclopedia_of_life_id",
+            "P2671": "google_knowledge_graph_id",
+            "P349": "ndl_authority_id",
+            "P214": "viaf_id",
+            "P11196": "euvat_id",
+            "P9475": "whos_who_in_france_id",
+            "P6900": "alexa_skill_id",
+            "P11408": "swiss_parliament_id",
+            "P279": "subclass_of",
+            "P921": "main_subject",
+            "P2477": "sbn_author_id",
+            "P4969": "derivative_work",
+            "P989": "spoken_text_audio",
+            "P6262": "fandom_article_id",
+        }
+
     @staticmethod
     def login_to_wikidata() -> pywikibot.Site:
         """
@@ -100,9 +129,7 @@ class WikidataClient:
     def extract_entity_metadata(
         self,
         entity: Dict,
-        qid: str,
         language: str = "en",
-        properties: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Extract label, description, aliases, and specified property values from Wikidata entity JSON.
@@ -115,30 +142,33 @@ class WikidataClient:
             )
             aliases = [a["value"] for a in entity.get("aliases", {}).get(language, [])]
             result = {
-                "qid": qid,
                 "label": label,
                 "description": description,
                 "aliases": aliases,
             }
-            if properties:
-                result["properties"] = {}
-                claims = entity.get("claims", {})
-                for prop in properties:
-                    prop_values = []
-                    if prop in claims:
-                        for claim in claims[prop]:
-                            mainsnak = claim.get("mainsnak", {})
-                            datavalue = mainsnak.get("datavalue", {})
-                            value = datavalue.get("value")
-                            if isinstance(value, dict) and "id" in value:
-                                prop_values.append(value["id"])
-                            else:
-                                prop_values.append(value)
-                    result["properties"][prop] = prop_values
+
+            result["properties"] = {}
+            claims = entity.get("claims", {})
+            for property_id in self.property_id_to_name.keys():
+                prop_values = []
+                if property_id in claims:
+                    for claim in claims[property_id]:
+                        mainsnak = claim.get("mainsnak", {})
+                        datavalue = mainsnak.get("datavalue", {})
+                        value = datavalue.get("value")
+                        if isinstance(value, dict) and "id" in value:
+                            prop_values.append(value["id"])
+                        else:
+                            prop_values.append(value)
+                property_name = self.property_id_to_name[property_id]
+                result["properties"][property_name] = prop_values
+
             return result
         except Exception as e:
-            logger.error(f"Error extracting fields from entity for QID {qid}: {e}")
-            return {"qid": qid, "label": "", "description": "", "aliases": []}
+            logger.error(
+                f"Error extracting fields from entity for QID {entity['id']}: {e}"
+            )
+            return {"qid": entity["id"], "label": "", "description": "", "aliases": []}
 
     def search_entities(
         self, search_text: str, language: str = "en", limit: int = 50
