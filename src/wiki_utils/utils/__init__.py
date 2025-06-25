@@ -22,21 +22,25 @@ def read_json(file_path: str | Path):
     return data
 
 
-def visualize_graph(data: list[dict[str, str]]):
+def visualize_graph(graph_data: list[dict]):
+    """
+    Visualize data in Graph.
+        data should be list of dictionary containg 'from', 'to' and 'relationship'.
+    """
 
     # Create a directed graph
     G = nx.DiGraph()
 
     # Add edges and relationships as edge labels
-    for entry in data:
+    for entry in graph_data:
         from_node = entry["from"]
         to_node = entry["to"]
         relationship = entry["relationship"]
         G.add_edge(from_node, to_node, label=relationship)
 
-    # Draw the graph
-    pos = nx.spring_layout(G, k=0.5, iterations=50)
-    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(G, k=2.0, iterations=100)
+
+    plt.figure(figsize=(16, 10))
     nx.draw(
         G,
         pos,
