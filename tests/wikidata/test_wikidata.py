@@ -1,20 +1,27 @@
+from unittest import TestCase
+
 import pytest
 
 from wiki_utils.wikidata import WikidataClient
 
-# These are real BDRC IDs and their expected QIDs as of May 2025.
-# If Wikidata changes, these tests may need updating.
 
+class TestWikidataclient(TestCase):
+    def setUp(self):
+        self.client = WikidataClient()
 
-@pytest.mark.parametrize(
-    "work_id,expected_qid",
-    [
-        ("WA0RK0529", "Q622868"),  # Heart Sutra
-        ("P1215", "Q106795280"),  # Pendrub Zangpo Tashi (author)
-        ("PR0EAP570", None),  # Likely no QID for this collection
-        ("NONEXISTENTID", None),  # Definitely does not exist
-    ],
-)
-def test_get_qid(work_id, expected_qid):
-    result = WikidataClient().get_qid_by_bdrc_work_id(work_id)
-    assert result == expected_qid
+    def test_get_id(self):
+        # Heart Sutra
+        qid = self.client.get_qid_by_bdrc_work_id("WA0RK0529")
+        assert qid == "Q622868"
+
+        # Pendrub Zangpo Tashi (author)
+        qid = self.client.get_qid_by_bdrc_work_id("P1215")
+        assert qid == "Q106795280"
+
+        # Likely no QID for this collection
+        qid = self.client.get_qid_by_bdrc_work_id("PR0EAP570")
+        assert qid == None
+
+        # Definitely does not exist
+        qid = self.client.get_qid_by_bdrc_work_id("NONEXISTENTID")
+        assert qid == None
