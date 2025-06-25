@@ -145,6 +145,11 @@ class WikidataClient:
     def _extract_property_values(
         self, properties_metadata: Dict[str, Any], property_id: str
     ) -> List[Any]:
+        """
+        Imp Notes:
+            'claims' aka 'statements' is a structure in which properties information are stored in Wiki Data.
+            The mainsnak is the core part of a statement: it holds the main property and its value for that statement
+        """
         prop_values = []
         for property_metadata in properties_metadata.get(property_id, []):
             mainsnak = property_metadata.get("mainsnak", {})
@@ -160,6 +165,8 @@ class WikidataClient:
         """
         Parse useful metadata from entity metadata.
         Fields including label, description, aliases, and other properties defined in the constructor.
+
+        Imp Note: 'claims' aka 'statements' is a structure in which properties information are stored in Wiki Data.
         """
         try:
             labels = self._parse_labels(metadata)
