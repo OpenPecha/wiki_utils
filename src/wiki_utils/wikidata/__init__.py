@@ -93,10 +93,9 @@ class WikidataClient:
             logger.error(f"Error fetching QID for {bdrc_work_id}: {e}")
         return None
 
-    def fetch_entity_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
+    def get_entity_metadata_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
         """
-        Fetch the Wikidata entity data for a given QID.
-        Returns None if not found or on error.
+        Get Wiki Data Entity metadata by qid
         """
         url = f"{self.entity_url}/{qid}.json"
         try:
@@ -109,27 +108,26 @@ class WikidataClient:
             logger.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
             return None
 
-    def fetch_entity_by_bdrc_work_id(
+    def get_entity_metadata_by_bdrc_work_id(
         self, bdrc_work_id: str
     ) -> Optional[Dict[str, Any]]:
         """
-        Retrieve useful metadata for a BDRC work ID, including label, description, aliases, and specified properties.
-        Returns None if not found or on error.
+        Get Wiki Data Entity metadata by bdrd work id
         """
         qid = self.get_qid_by_bdrc_work_id(bdrc_work_id)
         if not qid:
             logger.warning(f"No QID found for work_id: {bdrc_work_id}")
             return None
-        entity = self.fetch_entity_by_qid(qid)
+        entity = self.get_entity_metadata_by_qid(qid)
         if not entity:
             logger.warning(f"No Wikidata entity found for QID: {qid}")
             return None
         return entity
 
-    def extract_entity_metadata(self, metadata: Dict) -> Dict[str, Any]:
+    def parse_entity_metadata(self, metadata: Dict) -> Dict[str, Any]:
         """
-        Extract label, description, aliases, and specified property values from Wikidata entity JSON.
-        Handles missing fields gracefully.
+        Parse useful metadata from entity metadata.
+            Fields including label, description, aliases, and other properties defined in the constructor.
         """
         try:
             labels = {
