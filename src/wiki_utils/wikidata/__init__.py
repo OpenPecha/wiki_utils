@@ -126,24 +126,26 @@ class WikidataClient:
             return None
         return entity
 
-    def extract_entity_metadata(
-        self,
-        entity: Dict,
-        language: str = "en",
-    ) -> Dict[str, Any]:
+    def extract_entity_metadata(self, entity: Dict) -> Dict[str, Any]:
         """
         Extract label, description, aliases, and specified property values from Wikidata entity JSON.
         Handles missing fields gracefully.
         """
         try:
-            label = entity.get("labels", {}).get(language, {}).get("value", "")
-            description = (
-                entity.get("descriptions", {}).get(language, {}).get("value", "")
-            )
-            aliases = [a["value"] for a in entity.get("aliases", {}).get(language, [])]
+            labels = {lang: label["value"] for lang, label in entity["labels"].items()}
+            descriptions = {
+                lang: description["value"]
+                for lang, description in entity["descriptions"].items()
+            }
+            aliases = {
+                lang: [aliase["value"] for aliase in _aliases]
+                for lang, _aliases in entity["aliases"].items()
+            }
+
             result = {
-                "label": label,
-                "description": description,
+                "qid": entity["id"],
+                "labels": labels,
+                "descriptions": descriptions,
                 "aliases": aliases,
             }
 
