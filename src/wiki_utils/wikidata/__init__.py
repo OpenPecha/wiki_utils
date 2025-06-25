@@ -142,14 +142,13 @@ class WikidataClient:
                 for lang, _aliases in entity["aliases"].items()
             }
 
-            result = {
+            metadata = {
                 "qid": entity["id"],
                 "labels": labels,
                 "descriptions": descriptions,
                 "aliases": aliases,
             }
 
-            result["properties"] = {}
             claims = entity.get("claims", {})
             for property_id in self.property_id_to_name.keys():
                 prop_values = []
@@ -163,9 +162,9 @@ class WikidataClient:
                         else:
                             prop_values.append(value)
                 property_name = self.property_id_to_name[property_id]
-                result["properties"][property_name] = prop_values
+                metadata[property_name] = prop_values
 
-            return result
+            return metadata
         except Exception as e:
             logger.error(
                 f"Error extracting fields from entity for QID {entity['id']}: {e}"
