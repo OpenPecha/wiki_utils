@@ -125,56 +125,70 @@ class WikidataClient:
 
         return entity_metadata
 
-    def parse_entity_metadata(self, metadata: Dict) -> Dict[str, Any]:
+    def _parse_labels(self, metadata: Dict[str, Any]) -> Dict[str, str]:
+        return {
+            lang: label["value"] for lang, label in metadata.get("labels", {}).items()
+        }
+
+    def _parse_descriptions(self, metadata: Dict[str, Any]) -> Dict[str, str]:
+        return {
+            lang: desc["value"]
+            for lang, desc in metadata.get("descriptions", {}).items()
+        }
+
+    def _parse_aliases(self, metadata: Dict[str, Any]) -> Dict[str, List[str]]:
+        return {
+            lang: [alias["value"] for alias in aliases]
+            for lang, aliases in metadata.get("aliases", {}).items()
+        }
+
+    def _extract_property_values(
+        self, claims: Dict[str, Any], property_id: str
+    ) -> List[Any]:
+        prop_values = []
+        for claim in claims.get(property_id, []):
+            mainsnak = claim.get("mainsnak", {})
+            datavalue = mainsnak.get("datavalue", {})
+            value = datavalue.get("value")
+            if isinstance(value, dict) and "id" in value:
+                prop_values.append(value["id"])
+            else:
+                prop_values.append(value)
+        return prop_values
+
+    def parse_entity_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         """
         Parse useful metadata from entity metadata.
-            Fields including label, description, aliases, and other properties defined in the constructor.
+        Fields including label, description, aliases, and other properties defined in the constructor.
         """
         try:
-            labels = {
-                lang: label["value"] for lang, label in metadata["labels"].items()
-            }
-            descriptions = {
-                lang: description["value"]
-                for lang, description in metadata["descriptions"].items()
-            }
-            aliases = {
-                lang: [aliase["value"] for aliase in _aliases]
-                for lang, _aliases in metadata["aliases"].items()
-            }
+            labels = self._parse_labels(metadata)
+            descriptions = self._parse_descriptions(metadata)
+            aliases = self._parse_aliases(metadata)
 
             parsed_metadata = {
-                "qid": metadata["id"],
+                "qid": metadata.get("id", ""),
                 "labels": labels,
                 "descriptions": descriptions,
                 "aliases": aliases,
             }
 
             claims = metadata.get("claims", {})
-            for property_id in self.property_id_to_name.keys():
-                prop_values = []
-                if property_id in claims:
-                    for claim in claims[property_id]:
-                        mainsnak = claim.get("mainsnak", {})
-                        datavalue = mainsnak.get("datavalue", {})
-                        value = datavalue.get("value")
-                        if isinstance(value, dict) and "id" in value:
-                            prop_values.append(value["id"])
-                        else:
-                            prop_values.append(value)
-                property_name = self.property_id_to_name[property_id]
-                parsed_metadata[property_name] = prop_values
+            for property_id, property_name in self.property_id_to_name.items():
+                parsed_metadata[property_name] = self._extract_property_values(
+                    claims, property_id
+                )
 
             return parsed_metadata
         except Exception as e:
             logger.error(
-                f"Error extracting fields from entity for QID {metadata['id']}: {e}"
+                f"Error extracting fields from entity for QID {metadata.get('id', 'unknown')}: {e}"
             )
             return {
-                "qid": metadata["id"],
-                "label": "",
-                "description": "",
-                "aliases": [],
+                "qid": metadata.get("id", ""),
+                "labels": {},
+                "descriptions": {},
+                "aliases": {},
             }
 
     def search_entities(
