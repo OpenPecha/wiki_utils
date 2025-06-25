@@ -143,11 +143,11 @@ class WikidataClient:
         }
 
     def _extract_property_values(
-        self, claims: Dict[str, Any], property_id: str
+        self, properties_metadata: Dict[str, Any], property_id: str
     ) -> List[Any]:
         prop_values = []
-        for claim in claims.get(property_id, []):
-            mainsnak = claim.get("mainsnak", {})
+        for property_metadata in properties_metadata.get(property_id, []):
+            mainsnak = property_metadata.get("mainsnak", {})
             datavalue = mainsnak.get("datavalue", {})
             value = datavalue.get("value")
             if isinstance(value, dict) and "id" in value:
@@ -173,10 +173,10 @@ class WikidataClient:
                 "aliases": aliases,
             }
 
-            claims = metadata.get("claims", {})
+            properties_metadata = metadata.get("claims", {})
             for property_id, property_name in self.property_id_to_name.items():
                 parsed_metadata[property_name] = self._extract_property_values(
-                    claims, property_id
+                    properties_metadata, property_id
                 )
 
             return parsed_metadata
