@@ -78,11 +78,8 @@ class WikidataClient:
             logger.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
             return None
 
-    def get_entity_metadata_by_bdrc_work_id(
-        self,
-        bdrc_work_id: str,
-        language: str = "en",
-        properties: Optional[List[str]] = None,
+    def fetch_entity_by_bdrc_work_id(
+        self, bdrc_work_id: str
     ) -> Optional[Dict[str, Any]]:
         """
         Retrieve useful metadata for a BDRC work ID, including label, description, aliases, and specified properties.
@@ -96,7 +93,7 @@ class WikidataClient:
         if not entity:
             logger.warning(f"No Wikidata entity found for QID: {qid}")
             return None
-        return self.extract_entity_metadata(entity, qid, language, properties)
+        return entity
 
     def extract_entity_metadata(
         self,
@@ -171,11 +168,3 @@ class WikidataClient:
         except Exception as e:
             logger.error(f"Error searching Wikidata for '{search_text}': {e}")
             return []
-
-
-if __name__ == "__main__":
-    client = WikidataClient()
-
-    search_text = "ཤེས་རབ་སྙིང་པོ།"
-    res = client.search_entities(search_text)
-    print(res)
