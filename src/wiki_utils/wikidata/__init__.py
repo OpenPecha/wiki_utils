@@ -126,30 +126,32 @@ class WikidataClient:
             return None
         return entity
 
-    def extract_entity_metadata(self, entity: Dict) -> Dict[str, Any]:
+    def extract_entity_metadata(self, metadata: Dict) -> Dict[str, Any]:
         """
         Extract label, description, aliases, and specified property values from Wikidata entity JSON.
         Handles missing fields gracefully.
         """
         try:
-            labels = {lang: label["value"] for lang, label in entity["labels"].items()}
+            labels = {
+                lang: label["value"] for lang, label in metadata["labels"].items()
+            }
             descriptions = {
                 lang: description["value"]
-                for lang, description in entity["descriptions"].items()
+                for lang, description in metadata["descriptions"].items()
             }
             aliases = {
                 lang: [aliase["value"] for aliase in _aliases]
-                for lang, _aliases in entity["aliases"].items()
+                for lang, _aliases in metadata["aliases"].items()
             }
 
-            metadata = {
-                "qid": entity["id"],
+            parsed_metadata = {
+                "qid": metadata["id"],
                 "labels": labels,
                 "descriptions": descriptions,
                 "aliases": aliases,
             }
 
-            claims = entity.get("claims", {})
+            claims = metadata.get("claims", {})
             for property_id in self.property_id_to_name.keys():
                 prop_values = []
                 if property_id in claims:
@@ -162,14 +164,19 @@ class WikidataClient:
                         else:
                             prop_values.append(value)
                 property_name = self.property_id_to_name[property_id]
-                metadata[property_name] = prop_values
+                parsed_metadata[property_name] = prop_values
 
-            return metadata
+            return parsed_metadata
         except Exception as e:
             logger.error(
-                f"Error extracting fields from entity for QID {entity['id']}: {e}"
+                f"Error extracting fields from entity for QID {metadata['id']}: {e}"
             )
-            return {"qid": entity["id"], "label": "", "description": "", "aliases": []}
+            return {
+                "qid": metadata["id"],
+                "label": "",
+                "description": "",
+                "aliases": [],
+            }
 
     def search_entities(
         self, search_text: str, language: str = "en", limit: int = 50
