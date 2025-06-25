@@ -1,0 +1,366 @@
+{
+  "qid": "Q622868",
+  "labels": {
+    "zh-hans": "摩诃般若波罗蜜多心经",
+    "zh-hant": "摩訶般若波羅蜜多心經",
+    "zh-hk": "摩訶般若波羅蜜多心經",
+    "bo": "ཤེས་རབ་སྙིང་པོ།",
+    "pl": "Sutra Serca",
+    "ko": "반야심경",
+    "fr": "Sūtra du Cœur",
+    "es": "Sutra del Corazón",
+    "ms": "Sutra Hati",
+    "it": "Sutra del Cuore",
+    "id": "Sutra Hati",
+    "de": "Herz-Sutra",
+    "ja": "般若心経",
+    "vi": "Bát-nhã-ba-la-mật-đa tâm kinh",
+    "yue": "心經",
+    "nl": "Hartsoetra",
+    "hi": "हृदय सूत्र",
+    "pt": "Sutra do Coração",
+    "ru": "Сутра сердца",
+    "en": "Heart Sutra",
+    "tr": "Kalp Sutra",
+    "uk": "Сутра Серця",
+    "la": "Orsa Cordis",
+    "gan-hans": "心经",
+    "gan-hant": "心經",
+    "cs": "Sútra srdce",
+    "te": "హృదయ సూత్రం",
+    "ka": "გულის სუტრა",
+    "new": "हृदय सूत्र",
+    "zh": "摩訶般若波羅蜜多心經",
+    "gan": "心經",
+    "nb": "Hjertesūtraen",
+    "de-ch": "Herz-Sutra",
+    "en-ca": "Heart Sutra",
+    "en-gb": "Heart Sutra",
+    "mn": "Зүрхэн судар",
+    "pt-br": "Sutra do Coração",
+    "th": "ปรัชญาปารมิตาหฤทัยสูตร",
+    "bxr": "Бэлиг барамидай зүрхэн судар",
+    "hu": "Szív szútra",
+    "sa": "प्रज्ञापारमिताहृदय",
+    "eo": "Sutro de Koro",
+    "wuu": "心经",
+    "et": "Ületava mõistmise südasuutra",
+    "got": "𐌷𐌰𐌹𐍂𐍄𐍉𐍃𐌿𐍄𐍂𐌰",
+    "zh-tw": "摩訶般若波羅蜜多心經",
+    "ca": "Sutra del cor",
+    "si": "හෘදය සූත්‍රය",
+    "ne": "हृदय सूत्र",
+    "fa": "سوره دل",
+    "bcl": "Sutra kan puso",
+    "lzh": "般若波羅蜜多心經",
+    "bn": "হৃদয়সূত্র",
+    "sl": "Srčna sutra",
+    "he": "סוטרת הלב",
+    "mul": "Prajñāpāramitāhṛdaya"
+  },
+  "descriptions": {
+    "en": "short Mahayana sutra, surviving in Sanskrit, Chinese and Tibetan, expounding the Two Truths doctrine that ultimately all phenomena are sunyata",
+    "fr": "bref sûtra qui compte parmi les textes fondamentaux du bouddhisme Mahâyâna",
+    "yue": "佛經",
+    "zh-hant": "佛經",
+    "zh": "大乘佛教经典",
+    "id": "sutra Mahayana pendek, bertahan dalam bahasa Sanskerta, Tionghoa dan Tibet, menguraikan doktrin Dua Kebenaran bahwa pada akhirnya semua fenomena adalah sunyata",
+    "nl": "boeddhistische tekst",
+    "zh-hans": "佛经",
+    "zh-tw": "大乘佛教經典",
+    "tr": "Budizm inanışında kutsal metin",
+    "si": "සූත්‍රය",
+    "ja": "大乗仏教の仏典",
+    "es": "Escrituras budistas budistas mahayana",
+    "cy": "Ysgrythurau Bwdhaidd Bwdhaidd Mahayana",
+    "ko": "대승 불교의 불전",
+    "hu": "Mahayana buddhista buddhista írások",
+    "it": "Scritture buddiste buddiste Mahayana",
+    "wuu": "大乘佛教关于空性跟般若思想个经典",
+    "de": "buddhistischer Lehrtext",
+    "ca": "escriptures budistes budistes Mahayana",
+    "mn": "Их хөлгөний Буддын шашны судар бичиг",
+    "ru": "Буддийские буддийские писания Махаяны",
+    "zh-hk": "大乘佛教佛典",
+    "pl": "Buddyjskie Pisma Buddyjskie Mahajany",
+    "la": "Buddhist Mahayana Buddhist scripturis",
+    "ms": "Kitab Buddha Mahayana Buddha",
+    "pt": "Escrituras Budistas Mahayana Budistas",
+    "vi": "Kinh điển Phật giáo Đại thừa",
+    "eo": "mallonga mahajana sutro, en kiu Avalokiteŝvaro paroladas pri la doktrino de la malpleneco de ĉio",
+    "et": "Budistlik õpetustekst",
+    "hi": "बौद्ध धर्म का पाठ",
+    "te": "బౌద్ధ బోధనా వచనం",
+    "th": "ข้อความสอนพุทธศาสนา",
+    "uk": "буддійський текст викладання",
+    "pt-br": "Texto de ensino budista",
+    "bn": "মহাযান বৌদ্ধধর্মের সূত্র",
+    "sl": "kratka mahajanska sutra, ohranjena v sanskrtu, kitajščini in tibetanščini, ki razlaga nauk dveh resnic, da so vsi pojavi na koncu šunjata",
+    "gan-hant": "係佛教裡頭最精深、至重要嗰一部經文",
+    "lzh": "大乘佛經之一",
+    "nb": "en hellig tekst innenfor mahāyānabuddhismen",
+    "bo": "ཤེས་རབ་སྙིང་པོ་ནི་བཅོམ་ལྡན་འདས་ཀྱིས་གསུངས་པའི་ཤེས་རབ་ཀྱི་ཕ་རོལ་ཏུ་ཕྱིན་པའི་མདོ་སྡེའི་སྙིང་པོ་ཡོངས་སུ་བསྡུས་པ་ཞིག་ཡིན། གཞུང་འདིས་གཙོ་བོ་སྟོང་ཉིད་ཀྱི་རྣམ་གཞག་གསལ་བཤད་མཛད་ཅིང་། མདོ་འདི་ནི་ནང་པའི་གཞུང་ལུགས་ཀྱི་ནང་ནས་ཤིན་ཏུ་གལ་ཆེན་ཞིག་ཏུ་བརྩིས་ཀྱི་ཡོད།"
+  },
+  "aliases": {
+    "zh": [
+      "般若波羅蜜多心經",
+      "摩訶般若波羅密多心經",
+      "般若心經",
+      "般若波罗密多心经",
+      "心经",
+      "心經",
+      "多心經",
+      "多心经"
+    ],
+    "bo": [
+      "ཤེས་རབ་སྙིང་པོ།",
+      "འཕགས་པ་ཤེས་རབ་ཀྱི་ཕ་རོལ་ཏུ་ཕྱིན་པའི་སྙིང་པོ།",
+      "ཤེར་སྙིང་།"
+    ],
+    "pl": [
+      "Prajnaparamita Sutra",
+      "Sutra Serca Doskonałej Mądrości"
+    ],
+    "ko": [
+      "마하반야 바라밀다 심경",
+      "반야바라밀다심경",
+      "색즉시공 공즉시색",
+      "대반야바라밀다심경",
+      "마하반야바라밀다심경"
+    ],
+    "fr": [
+      "Sutra du Cœur",
+      "Sutra du Coeur",
+      "Sûtra du Cœur",
+      "Le cœur de la perfection de sagesse",
+      "Soutra du coeur",
+      "Sûtra du Coeur"
+    ],
+    "es": [
+      "Sutra del Corazon"
+    ],
+    "id": [
+      "Prajnaparamita Hrdaya Sutra"
+    ],
+    "de": [
+      "Herzsutra",
+      "Mohe bore boluomiduo xinjing",
+      "Sutra der höchsten Weisheit"
+    ],
+    "ja": [
+      "心経",
+      "摩訶般若波羅蜜多心経",
+      "仏説摩訶般若波羅蜜多心経",
+      "般若波羅蜜多心経",
+      "プラジュニャーパーラミター・フリダヤ"
+    ],
+    "vi": [
+      "Tâm Kinh Bát Nhã Ba La Mật Đa",
+      "Broken/Kim cương bát-nhã-ba-la-mật-đa tâm kinh",
+      "Tâm Kinh",
+      "Bát Nhã Tâm Kinh",
+      "Bát Nhã Ba La Mật Đa Tâm Kinh",
+      "Bát-nhã tâm kinh"
+    ],
+    "nl": [
+      "Xinjing",
+      "Hart-soetra"
+    ],
+    "ru": [
+      "Праджняпарамита хридая сутра",
+      "Божэ боломидо синь цзин",
+      "Сутра Сердца Праджняпарамиты"
+    ],
+    "uk": [
+      "Хання-сінґьо",
+      "Хання-сінгьо",
+      "Хання Сінгьо",
+      "Хання Сінґьо"
+    ],
+    "gan": [
+      "摩訶般若波羅蜜多心經",
+      "般若心經"
+    ],
+    "cs": [
+      "Hrdajasútra",
+      "Hrdaja sútra",
+      "Srdeční sútra"
+    ],
+    "nb": [
+      "Hjerte Sutraen"
+    ],
+    "yue": [
+      "般若波羅蜜多心經"
+    ],
+    "zh-hant": [
+      "般若波羅蜜多心經",
+      "心經"
+    ],
+    "et": [
+      "Südasuutra",
+      "Ületava Mõistmise Südasuutra"
+    ],
+    "zh-hans": [
+      "心经",
+      "多心经"
+    ],
+    "zh-tw": [
+      "般若波羅蜜多心經",
+      "心經"
+    ],
+    "si": [
+      "ප්‍රඥාපාරමිතාහෘදය සූත්‍රය",
+      "ප්‍රඥාපාරමිතා හෘදය සූත්‍රය",
+      "ප්‍රඥා පාරමිතා හෘදය සූත්‍රය"
+    ],
+    "eo": [
+      "Sutro de la koro de la perfekteco de saĝo"
+    ],
+    "en": [
+      "The Heart of the Perfection of Wisdom",
+      "Heart of the Perfection of Wisdom",
+      "The Heart of Wisdom Sutra",
+      "Heart of Wisdom Sutra",
+      "The Heart of Understanding"
+    ],
+    "sl": [
+      "Sutra srca"
+    ],
+    "mul": [
+      "Prajñā-Pāramitā Hṛdaya",
+      "Prajñāpāramitāhṛdayasūtraṃ",
+      "Bore Xin Jing",
+      "Hannya Shingyō",
+      "Bát nhã tâm kinh",
+      "Banya Shimgyeong",
+      "Prajñāhṛdaya Sūtra",
+      "Prajñāpāramitāhṛdaya"
+    ],
+    "la": [
+      "Orsa Cordis Sapientiae Perfectae"
+    ]
+  },
+  "commons_category_link": [
+    "Heart Sutra"
+  ],
+  "freebase_id": [
+    "/m/02c7_7"
+  ],
+  "instance_of": [
+    "Q1191035"
+  ],
+  "musicbrainz_work_id": [
+    "85aeb28c-61f8-4db7-bf3f-9a215e62ccd8"
+  ],
+  "quora_topic_id": [
+    "Heart-Sutra"
+  ],
+  "title": [
+    {
+      "text": "प्रज्ञापारमिताहृदय सूत्र",
+      "language": "sa"
+    },
+    {
+      "text": "般若波羅蜜多心經",
+      "language": "lzh"
+    },
+    {
+      "text": "般若波羅蜜多心経",
+      "language": "ja"
+    },
+    {
+      "text": "반야바라밀다심경",
+      "language": "ko"
+    },
+    {
+      "text": "བཅོམ་ལྡན་འདས་མ་ཤེས་རབ་ཀྱི་ཕ་རོལ་ཏུ་ཕྱིན་པའི་སྙིང་པོ།",
+      "language": "bo"
+    },
+    {
+      "text": "般若波罗蜜多心经",
+      "language": "zh-hans"
+    }
+  ],
+  "encyclopaedia_britannica_online_id": [
+    "topic/Heart-Sutra"
+  ],
+  "has_edition": [
+    "Q19101765",
+    "Q85663685",
+    "Q85706325",
+    "Q86485015",
+    "Q85389564",
+    "Q85566147",
+    "Q77674804",
+    "Q18837332",
+    "Q133802247",
+    "Q133802048",
+    "Q133802133",
+    "Q133802661",
+    "Q133802430",
+    "Q133802194",
+    "Q133802341",
+    "Q133465124"
+  ],
+  "babelnet_id": [
+    "03224819n"
+  ],
+  "image": [
+    "Prajnyaapaaramitaa Hridaya Pel.sogd.jpg",
+    "Xinjing shengjiaoxu wangxizhi.png",
+    "HANNYA SHINGYOU or Heart Sutra in Japan 玄奘訳 般若心経 般若波羅蜜多心經.jpg",
+    "한자 반야심경 - 휴대폰용.pdf",
+    "ཤེས་རབ་སྙིང་པོ། སྡེ་དགེ་པར་ཕུད།.pdf"
+  ],
+  "un_locode": [
+    "반야심경"
+  ],
+  "video": [
+    "Monks of Soji-ji.webm"
+  ],
+  "encyclopedia_of_life_id": [
+    "78892"
+  ],
+  "google_knowledge_graph_id": [
+    "/g/1220442h"
+  ],
+  "ndl_authority_id": [
+    "00645188"
+  ],
+  "viaf_id": [
+    "389145858279423022773"
+  ],
+  "euvat_id": [
+    "般若波罗蜜多心经"
+  ],
+  "whos_who_in_france_id": [
+    "E0021513"
+  ],
+  "alexa_skill_id": [
+    "般若心経"
+  ],
+  "swiss_parliament_id": [
+    "般若心経"
+  ],
+  "subclass_of": [
+    "Q1001051"
+  ],
+  "main_subject": [
+    "Q546054"
+  ],
+  "sbn_author_id": [
+    "WA0RK0529"
+  ],
+  "derivative_work": [
+    "Q133853164",
+    "Q133853265",
+    "Q133853569"
+  ],
+  "spoken_text_audio": [
+    "Heart Sutra.oga",
+    "摩訶般若波羅蜜多心經.ogg"
+  ],
+  "fandom_article_id": [
+    "religion:Heart_Sutra"
+  ]
+}

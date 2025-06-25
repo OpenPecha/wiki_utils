@@ -24,6 +24,35 @@ class WikidataClient:
         )
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
 
+        self.property_id_to_name = {
+            "P373": "commons_category_link",
+            "P646": "freebase_id",
+            "P31": "instance_of",
+            "P435": "musicbrainz_work_id",
+            "P3417": "quora_topic_id",
+            "P1476": "title",
+            "P1417": "encyclopaedia_britannica_online_id",
+            "P747": "has_edition",
+            "P2581": "babelnet_id",
+            "P18": "image",
+            "P8885": "un_locode",
+            "P10": "video",
+            "P10565": "encyclopedia_of_life_id",
+            "P2671": "google_knowledge_graph_id",
+            "P349": "ndl_authority_id",
+            "P214": "viaf_id",
+            "P11196": "euvat_id",
+            "P9475": "whos_who_in_france_id",
+            "P6900": "alexa_skill_id",
+            "P11408": "swiss_parliament_id",
+            "P279": "subclass_of",
+            "P921": "main_subject",
+            "P2477": "sbn_author_id",
+            "P4969": "derivative_work",
+            "P989": "spoken_text_audio",
+            "P6262": "fandom_article_id",
+        }
+
     @staticmethod
     def login_to_wikidata() -> pywikibot.Site:
         """
@@ -36,8 +65,7 @@ class WikidataClient:
 
     def get_qid_by_bdrc_work_id(self, bdrc_work_id: str) -> Optional[str]:
         """
-        Retrieve the Wikidata QID for a given BDRC work ID.
-        Returns None if not found or on error.
+        Get Wiki Data qid for a given BDRC work id
         """
         query = f"""
         SELECT ?item WHERE {{
@@ -64,83 +92,111 @@ class WikidataClient:
             logger.error(f"Error fetching QID for {bdrc_work_id}: {e}")
         return None
 
-    def fetch_entity_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
+    def get_entity_metadata_by_qid(self, qid: str) -> Optional[Dict[str, Any]]:
         """
-        Fetch the Wikidata entity data for a given QID.
-        Returns None if not found or on error.
+        Get Wiki Data Entity metadata for a given qid
         """
         url = f"{self.entity_url}/{qid}.json"
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            entity = data["entities"][qid]
+            return entity
         except Exception as e:
             logger.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
             return None
 
     def get_entity_metadata_by_bdrc_work_id(
-        self,
-        bdrc_work_id: str,
-        language: str = "en",
-        properties: Optional[List[str]] = None,
+        self, bdrc_work_id: str
     ) -> Optional[Dict[str, Any]]:
         """
-        Retrieve useful metadata for a BDRC work ID, including label, description, aliases, and specified properties.
-        Returns None if not found or on error.
+        Get Wiki Data Entity metadata for a given BDRC work id.
         """
         qid = self.get_qid_by_bdrc_work_id(bdrc_work_id)
-        if not qid:
-            logger.warning(f"No QID found for work_id: {bdrc_work_id}")
+        if qid is None:
+            logger.warning(f"No QID found for BDRC work ID: {bdrc_work_id}")
             return None
-        entity = self.fetch_entity_by_qid(qid)
-        if not entity:
+
+        entity_metadata = self.get_entity_metadata_by_qid(qid)
+        if entity_metadata is None:
             logger.warning(f"No Wikidata entity found for QID: {qid}")
             return None
-        return self.extract_entity_metadata(entity, qid, language, properties)
 
-    def extract_entity_metadata(
-        self,
-        entity_json: Dict[str, Any],
-        qid: str,
-        language: str = "en",
-        properties: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        return entity_metadata
+
+    def _parse_labels(self, metadata: Dict[str, Any]) -> Dict[str, str]:
+        return {
+            lang: label["value"] for lang, label in metadata.get("labels", {}).items()
+        }
+
+    def _parse_descriptions(self, metadata: Dict[str, Any]) -> Dict[str, str]:
+        return {
+            lang: desc["value"]
+            for lang, desc in metadata.get("descriptions", {}).items()
+        }
+
+    def _parse_aliases(self, metadata: Dict[str, Any]) -> Dict[str, List[str]]:
+        return {
+            lang: [alias["value"] for alias in aliases]
+            for lang, aliases in metadata.get("aliases", {}).items()
+        }
+
+    def _extract_property_values(
+        self, properties_metadata: Dict[str, Any], property_id: str
+    ) -> List[Any]:
         """
-        Extract label, description, aliases, and specified property values from Wikidata entity JSON.
-        Handles missing fields gracefully.
+        Imp Notes:
+            'claims' aka 'statements' is a structure in which properties information are stored in Wiki Data.
+            The mainsnak is the core part of a statement: it holds the main property and its value for that statement
+        """
+        prop_values = []
+        for property_metadata in properties_metadata.get(property_id, []):
+            mainsnak = property_metadata.get("mainsnak", {})
+            datavalue = mainsnak.get("datavalue", {})
+            value = datavalue.get("value")
+            if isinstance(value, dict) and "id" in value:
+                prop_values.append(value["id"])
+            else:
+                prop_values.append(value)
+        return prop_values
+
+    def parse_entity_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Parse useful metadata from entity metadata.
+        Fields including label, description, aliases, and other properties defined in the constructor.
+
+        Imp Note: 'claims' aka 'statements' is a structure in which properties information are stored in Wiki Data.
         """
         try:
-            entity = entity_json["entities"][qid]
-            label = entity.get("labels", {}).get(language, {}).get("value", "")
-            description = (
-                entity.get("descriptions", {}).get(language, {}).get("value", "")
-            )
-            aliases = [a["value"] for a in entity.get("aliases", {}).get(language, [])]
-            result = {
-                "qid": qid,
-                "label": label,
-                "description": description,
+            labels = self._parse_labels(metadata)
+            descriptions = self._parse_descriptions(metadata)
+            aliases = self._parse_aliases(metadata)
+
+            parsed_metadata = {
+                "qid": metadata.get("id", ""),
+                "labels": labels,
+                "descriptions": descriptions,
                 "aliases": aliases,
             }
-            if properties:
-                result["properties"] = {}
-                claims = entity.get("claims", {})
-                for prop in properties:
-                    prop_values = []
-                    if prop in claims:
-                        for claim in claims[prop]:
-                            mainsnak = claim.get("mainsnak", {})
-                            datavalue = mainsnak.get("datavalue", {})
-                            value = datavalue.get("value")
-                            if isinstance(value, dict) and "id" in value:
-                                prop_values.append(value["id"])
-                            else:
-                                prop_values.append(value)
-                    result["properties"][prop] = prop_values
-            return result
+
+            properties_metadata = metadata.get("claims", {})
+            for property_id, property_name in self.property_id_to_name.items():
+                parsed_metadata[property_name] = self._extract_property_values(
+                    properties_metadata, property_id
+                )
+
+            return parsed_metadata
         except Exception as e:
-            logger.error(f"Error extracting fields from entity for QID {qid}: {e}")
-            return {"qid": qid, "label": "", "description": "", "aliases": []}
+            logger.error(
+                f"Error extracting fields from entity for QID {metadata.get('id', 'unknown')}: {e}"
+            )
+            return {
+                "qid": metadata.get("id", ""),
+                "labels": {},
+                "descriptions": {},
+                "aliases": {},
+            }
 
     def search_entities(
         self, search_text: str, language: str = "en", limit: int = 50
@@ -171,11 +227,3 @@ class WikidataClient:
         except Exception as e:
             logger.error(f"Error searching Wikidata for '{search_text}': {e}")
             return []
-
-
-if __name__ == "__main__":
-    client = WikidataClient()
-
-    search_text = "ཤེས་རབ་སྙིང་པོ།"
-    res = client.search_entities(search_text)
-    print(res)
