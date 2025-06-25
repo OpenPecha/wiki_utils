@@ -73,7 +73,9 @@ class WikidataClient:
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            entity = data["entities"][qid]
+            return entity
         except Exception as e:
             logger.error(f"Error fetching Wikidata entity for QID {qid}: {e}")
             return None
@@ -97,7 +99,7 @@ class WikidataClient:
 
     def extract_entity_metadata(
         self,
-        entity_json: Dict[str, Any],
+        entity: Dict,
         qid: str,
         language: str = "en",
         properties: Optional[List[str]] = None,
@@ -107,7 +109,6 @@ class WikidataClient:
         Handles missing fields gracefully.
         """
         try:
-            entity = entity_json["entities"][qid]
             label = entity.get("labels", {}).get(language, {}).get("value", "")
             description = (
                 entity.get("descriptions", {}).get(language, {}).get("value", "")
