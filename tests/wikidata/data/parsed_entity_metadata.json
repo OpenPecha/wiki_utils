@@ -240,23 +240,6 @@
       "Orsa Cordis Sapientiae Perfectae"
     ]
   },
-  "author": [],
-  "translator": [],
-  "commons_category_link": [
-    "Heart Sutra"
-  ],
-  "freebase_id": [
-    "/m/02c7_7"
-  ],
-  "instance_of": [
-    "Q1191035"
-  ],
-  "musicbrainz_work_id": [
-    "85aeb28c-61f8-4db7-bf3f-9a215e62ccd8"
-  ],
-  "quora_topic_id": [
-    "Heart-Sutra"
-  ],
   "title": [
     {
       "text": "प्रज्ञापारमिताहृदय सूत्र",
@@ -283,8 +266,16 @@
       "language": "zh-hans"
     }
   ],
-  "encyclopaedia_britannica_online_id": [
-    "topic/Heart-Sutra"
+  "author": [],
+  "translator": [],
+  "commons_category_link": [
+    "Heart Sutra"
+  ],
+  "instance_of": [
+    "Q1191035"
+  ],
+  "subclass_of": [
+    "Q1001051"
   ],
   "has_edition": [
     "Q19101765",
@@ -304,9 +295,34 @@
     "Q133802341",
     "Q133465124"
   ],
-  "babelnet_id": [
-    "03224819n"
+  "derivative_work": [
+    "Q133853164",
+    "Q133853265",
+    "Q133853569"
   ],
+  "genre": [],
+  "main_subject": [
+    "Q546054"
+  ],
+  "described_by_source": [],
+  "exact_match": [],
+  "language_of_work": [],
+  "publisher": [],
+  "production_method": [],
+  "writing_system": [],
+  "place_of_publication": [],
+  "copyright_status": [],
+  "number_of_volumes": [],
+  "edition_or_translation_of": [],
+  "collection": [],
+  "binding_type": [],
+  "material_used": [],
+  "printed_by": [],
+  "bibliography note": [],
+  "number_of_pages": [],
+  "has part": [],
+  "IIIF_manifest": [],
+  "stated in": [],
   "image": [
     "Prajnyaapaaramitaa Hridaya Pel.sogd.jpg",
     "Xinjing shengjiaoxu wangxizhi.png",
@@ -314,55 +330,17 @@
     "한자 반야심경 - 휴대폰용.pdf",
     "ཤེས་རབ་སྙིང་པོ། སྡེ་དགེ་པར་ཕུད།.pdf"
   ],
-  "un_locode": [
-    "반야심경"
-  ],
   "video": [
     "Monks of Soji-ji.webm"
-  ],
-  "encyclopedia_of_life_id": [
-    "78892"
   ],
   "google_knowledge_graph_id": [
     "/g/1220442h"
   ],
-  "ndl_authority_id": [
-    "00645188"
-  ],
-  "viaf_id": [
-    "389145858279423022773"
-  ],
-  "euvat_id": [
-    "般若波罗蜜多心经"
-  ],
-  "whos_who_in_france_id": [
-    "E0021513"
-  ],
-  "alexa_skill_id": [
-    "般若心経"
-  ],
-  "swiss_parliament_id": [
-    "般若心経"
-  ],
-  "subclass_of": [
-    "Q1001051"
-  ],
-  "main_subject": [
-    "Q546054"
-  ],
   "sbn_author_id": [
     "WA0RK0529"
-  ],
-  "derivative_work": [
-    "Q133853164",
-    "Q133853265",
-    "Q133853569"
   ],
   "spoken_text_audio": [
     "Heart Sutra.oga",
     "摩訶般若波羅蜜多心經.ogg"
-  ],
-  "fandom_article_id": [
-    "religion:Heart_Sutra"
   ]
 }
