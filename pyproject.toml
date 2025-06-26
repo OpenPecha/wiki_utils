@@ -18,6 +18,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "networkx >= 3.5"
     "matplotlib >=  3.10.3",
     "requests>=2.32.3",
     "pywikibot>=10.1.0",
