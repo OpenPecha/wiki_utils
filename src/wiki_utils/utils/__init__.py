@@ -67,7 +67,30 @@ def visualize_graph_interactive(
     output_html: str = "graph.html",
 ):
     net = Network(height="800px", width="100%", directed=True)
-    net.barnes_hut(spring_length=200)
+
+    # Configure physics for more compact layout
+    net.set_options(
+        """
+    var options = {
+      "physics": {
+        "barnesHut": {
+          "gravitationalConstant": -800,
+          "centralGravity": 0.1,
+          "springLength": 200,
+          "springConstant": 0.08,
+          "damping": 0.15
+        },
+        "maxVelocity": 50,
+        "minVelocity": 0.1,
+        "solver": "barnesHut",
+        "timestep": 0.35
+      },
+      "layout": {
+        "improvedLayout": true
+      }
+    }
+    """
+    )
 
     # Collect unique node ids and edge types
     node_ids = set()
@@ -92,18 +115,27 @@ def visualize_graph_interactive(
             node_id,
             label=label,
             title=title,
-            font={"size": 24, "color": "black"},
+            font={"size": 20, "color": "black"},
             shape="dot",
-            size=30,
+            size=25,
         )
 
-    # Add edges with color based on relationship type
+    # Add edges with color based on relationship type and shorter arrows
     for entry in graph_data:
         from_node = entry["from"]
         to_node = entry["to"]
         rel = entry["relationship"]
         color = relationship_colors.get(rel, "#999999")
-        net.add_edge(from_node, to_node, label=rel, color=color, arrows="to")
+        net.add_edge(
+            from_node,
+            to_node,
+            label=rel,
+            color=color,
+            arrows="to",
+            length=1000,  # Increased edge length for more spacing
+            width=5,  # Thicker edges for better visibility
+            smooth={"type": "curvedCW", "roundness": 0.2},  # Curved edges
+        )
 
     # Generate HTML
     net.show(output_html, notebook=False)
@@ -115,11 +147,19 @@ if __name__ == "__main__":
     from wiki_utils.utils import read_json
 
     graph_data = read_json("heart_sutra_walk.json")
+    metadatas = read_json("qids_metadata.json")
 
-    metadata = {
-        "A": {"Name": "Alice", "Role": "Engineer", "Department": "R&D"},
-        "B": {"Name": "Bob", "Role": "Designer", "Department": "UX"},
-        "C": {"Name": "Carol", "Role": "Manager", "Team": "Operations"},
-    }
+    metadata_with_title = {}
+    for qid, metadata in metadatas.items():
+        title = metadata["labels"].get("en", {})
+        descriptions = metadata["descriptions"].get("en", {})
+        aliases = metadata["aliases"].get("en", {})
 
-    visualize_graph_interactive(graph_data, metadata)
+        metadata_with_title[qid] = {
+            "qid": qid,
+            "title": title,
+            "descriptions": descriptions,
+            "aliases": aliases,
+        }
+
+    visualize_graph_interactive(graph_data, metadata_with_title)
