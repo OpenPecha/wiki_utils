@@ -133,7 +133,7 @@ def visualize_graph_interactive(
             color=color,
             arrows="to",
             length=1000,  # Increased edge length for more spacing
-            width=5,  # Thicker edges for better visibility
+            width=3,  # Thicker edges for better visibility
             smooth={"type": "curvedCW", "roundness": 0.2},  # Curved edges
         )
 
