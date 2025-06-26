@@ -140,26 +140,3 @@ def visualize_graph_interactive(
     # Generate HTML
     net.show(output_html, notebook=False)
     print(f"Graph saved to {output_html}")
-
-
-# Example usage:
-if __name__ == "__main__":
-    from wiki_utils.utils import read_json
-
-    graph_data = read_json("heart_sutra_walk.json")
-    metadatas = read_json("qids_metadata.json")
-
-    metadata_with_title = {}
-    for qid, metadata in metadatas.items():
-        title = metadata["labels"].get("en", {})
-        descriptions = metadata["descriptions"].get("en", {})
-        aliases = metadata["aliases"].get("en", {})
-
-        metadata_with_title[qid] = {
-            "qid": qid,
-            "title": title,
-            "descriptions": descriptions,
-            "aliases": aliases,
-        }
-
-    visualize_graph_interactive(graph_data, metadata_with_title)

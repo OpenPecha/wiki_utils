@@ -25,6 +25,8 @@ class WikidataClient:
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
 
         self.property_id_to_name = {
+            "P50": "author",
+            "P655": "translator",
             "P373": "commons_category_link",
             "P646": "freebase_id",
             "P31": "instance_of",
@@ -276,15 +278,3 @@ class WikidataClient:
                 self.walk(derivative_qid, _visited, _edges)
 
         return _edges
-
-
-if __name__ == "__main__":
-    from wiki_utils.utils import write_json
-    from wiki_utils.wikidata import WikidataClient
-
-    qid = "Q622868"
-
-    client = WikidataClient()
-    res = client.walk(qid)
-
-    write_json(res, "heart_sutra_walk.json")
