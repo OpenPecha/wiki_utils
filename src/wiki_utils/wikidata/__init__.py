@@ -24,6 +24,9 @@ class WikidataClient:
         )
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
 
+        # Refer here more detail about properties
+        # https://github.com/OpenPecha/wiki_utils/issues/32#issuecomment-3008036776
+
         self.property_id_to_name = {
             "P1476": "title",
             "P50": "author",
@@ -38,6 +41,24 @@ class WikidataClient:
             "P1343": "described_by_source",
             "P2888": "exact_match",
             "P407": "language_of_work",
+            "P123": "publisher",
+            "P415": "production_method",
+            "P282": "writing_system",
+            "P291": "place_of_publication",
+            "P6216": "copyright_status",
+            "P2635": "number_of_volumes",
+            "P629": "edition_or_translation_of",
+            "P195": "collection",
+            "P415": "production_method",
+            "P5718": "binding_type",
+            "P186": "material_used",
+            "P872": "printed_by",
+            "P5016": "bibliography_note",
+            "P1104": "number_of_pages",
+            "P527": "has part",
+            "P5016": "bibliography note",
+            "P6108": "IIIF_manifest",
+            "P248": "stated in",
             "P18": "image",
             "P10": "video",
             "P2671": "google_knowledge_graph_id",
