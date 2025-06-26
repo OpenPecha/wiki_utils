@@ -25,19 +25,23 @@ class WikidataClient:
         self.headers = {"Accept": "application/json", "User-Agent": self.user_agent}
 
         self.property_id_to_name = {
+            "P1476": "title",
             "P50": "author",
             "P655": "translator",
             "P373": "commons_category_link",
             "P31": "instance_of",
-            "P1476": "title",
+            "P279": "subclass_of",
             "P747": "has_edition",
+            "P4969": "derivative_work",
+            "P136": "genre",
+            "P921": "main_subject",
+            "P1343": "described_by_source",
+            "P2888": "exact_match",
+            "P407": "language_of_work",
             "P18": "image",
             "P10": "video",
             "P2671": "google_knowledge_graph_id",
-            "P279": "subclass_of",
-            "P921": "main_subject",
             "P2477": "sbn_author_id",
-            "P4969": "derivative_work",
             "P989": "spoken_text_audio",
         }
 
