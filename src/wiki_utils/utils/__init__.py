@@ -1,13 +1,11 @@
-"""
-Utility functions for the wiki_utils package.
-"""
-
-
 import json
+import random
 from pathlib import Path
+from typing import Any, Dict, List
 
 import matplotlib.pyplot as plt
 import networkx as nx
+from pyvis.network import Network
 
 
 def write_json(data: dict | list, output_path: str | Path):
@@ -63,6 +61,65 @@ def visualize_graph(graph_data: list[dict]):
     plt.show()
 
 
+def visualize_graph_interactive(
+    graph_data: list[dict[str, str]],
+    metadata: dict[str, dict],
+    output_html: str = "graph.html",
+):
+    net = Network(height="800px", width="100%", directed=True)
+    net.barnes_hut(spring_length=200)
+
+    # Collect unique node ids and edge types
+    node_ids = set()
+    edge_types = set()
+    for entry in graph_data:
+        node_ids.add(entry["from"])
+        node_ids.add(entry["to"])
+        edge_types.add(entry["relationship"])
+
+    # Assign a color for each relationship type
+    relationship_colors = {
+        rel: f"#{random.randint(0, 0xFFFFFF):06x}" for rel in edge_types
+    }
+
+    # Add nodes with metadata (dictionary) as tooltip and large font
+    for node_id in node_ids:
+        label = node_id
+        meta = metadata.get(node_id, {})
+        # Convert dictionary to a string tooltip
+        title = json.dumps(meta, indent=2) if meta else "No metadata available"
+        net.add_node(
+            node_id,
+            label=label,
+            title=title,
+            font={"size": 24, "color": "black"},
+            shape="dot",
+            size=30,
+        )
+
+    # Add edges with color based on relationship type
+    for entry in graph_data:
+        from_node = entry["from"]
+        to_node = entry["to"]
+        rel = entry["relationship"]
+        color = relationship_colors.get(rel, "#999999")
+        net.add_edge(from_node, to_node, label=rel, color=color, arrows="to")
+
+    # Generate HTML
+    net.show(output_html, notebook=False)
+    print(f"Graph saved to {output_html}")
+
+
+# Example usage:
 if __name__ == "__main__":
-    data = read_json("heart_sutra_walk.json")
-    visualize_graph(data)
+    from wiki_utils.utils import read_json
+
+    graph_data = read_json("heart_sutra_walk.json")
+
+    metadata = {
+        "A": {"Name": "Alice", "Role": "Engineer", "Department": "R&D"},
+        "B": {"Name": "Bob", "Role": "Designer", "Department": "UX"},
+        "C": {"Name": "Carol", "Role": "Manager", "Team": "Operations"},
+    }
+
+    visualize_graph_interactive(graph_data, metadata)
