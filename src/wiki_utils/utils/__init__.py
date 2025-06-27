@@ -139,4 +139,48 @@ def visualize_graph_interactive(
 
     # Generate HTML
     net.show(output_html, notebook=False)
+
+    # Inject custom JavaScript for click-to-copy functionality
+    with open(output_html, encoding="utf-8") as f:
+        html = f.read()
+
+    # Find the place to inject the script (before </body>)
+    custom_script = """
+    <script type="text/javascript">
+    // Wait for vis network to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.network) {
+            window.network.on('click', function(params) {
+                if (params.nodes.length > 0) {
+                    var nodeId = params.nodes[0];
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(nodeId).then(function() {
+                            alert('Copied qid: ' + nodeId + ' to clipboard!');
+                        }, function(err) {
+                            alert('Failed to copy qid: ' + err);
+                        });
+                    } else {
+                        // fallback for older browsers
+                        var tempInput = document.createElement('input');
+                        tempInput.value = nodeId;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        alert('Copied qid: ' + nodeId + ' to clipboard!');
+                    }
+                }
+            });
+        }
+    });
+    </script>
+    """
+    if "</body>" in html:
+        html = html.replace("</body>", custom_script + "\n</body>")
+    else:
+        html += custom_script
+
+    with open(output_html, "w", encoding="utf-8") as f:
+        f.write(html)
+
     print(f"Graph saved to {output_html}")
