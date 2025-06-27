@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 from wiki_utils.wikipedia.article_upload import (
@@ -137,6 +138,8 @@ class TestArticleUpload(unittest.TestCase):
         self.assertEqual(
             mock_logger.info.call_count, 2
         )  # Two info calls (content and success)
+        # Clean up
+        Path("article_content.txt").unlink()
 
     @patch("pywikibot.Page")
     @patch("wiki_utils.wikipedia.article_upload.logger")
