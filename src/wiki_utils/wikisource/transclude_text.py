@@ -55,7 +55,7 @@ def get_base_info(site, index_title):
     page_ns = site.namespace(104)  # Page namespace
 
     # Generate query for pages in Page namespace that belong to this index
-    page_prefix = f"{page_ns}:{base_title_no_ext}/"
+    page_prefix = f"{page_ns}:{base_title_no_ext}/"  # noqa
 
     return base_title, base_title_no_ext, index_ns, page_ns, page_prefix
 
@@ -176,6 +176,7 @@ def format_page_orientation(index_title, site=None, dry_run=False):
                         summary="Bot: Adding margin styling and marking as proofread."
                     )
                 else:
+                    print(f"Updated text:\n{new_text[:1000]}\n")  # noqa
                     logger.info("Dry run: not saving page.")
         except Exception as e:
             logger.error(f"Error processing page {page.title()}: {e}")
@@ -226,10 +227,7 @@ def create_main_page(
 
     # Create the actual content with <pages> tag
     # The index attribute should not include the "Index:" prefix
-    # content = f'<pages index="{base_title}" from={from_page} to={to_page} />'
-    content = (
-        f'<pages index="{index_title[len("Index:"):]}" from={from_page} to={to_page} />'
-    )
+    content = f'<pages index="{index_title[len("Index:"):]}" from={from_page} to={to_page} />'  # noqa
 
     # Create or update the main page
     main_page = pywikibot.Page(site, main_title)
@@ -249,7 +247,7 @@ def create_main_page(
 def get_wikisource_links(
     sheet_id,
     creds_path,
-    range="ལས་ཀ་དངོས་གཞི།!H3:J10",
+    range_rows,
     output_file="wikisource_links.csv",
 ):
     """
@@ -275,7 +273,7 @@ def get_wikisource_links(
     sheet = service.spreadsheets()
 
     result = sheet.get(
-        spreadsheetId=sheet_id, ranges=[range], includeGridData=True
+        spreadsheetId=sheet_id, ranges=[range_rows], includeGridData=True
     ).execute()
 
     rows = result["sheets"][0]["data"][0]["rowData"]
@@ -283,8 +281,8 @@ def get_wikisource_links(
 
     for row in rows:
         try:
-            link_cell = row["values"][0]  # Column H
-            status_cell = row["values"][2].get("formattedValue", "")  # Column J
+            link_cell = row["values"][1]  # Column H
+            status_cell = row["values"][3].get("formattedValue", "")  # Column J
 
             if status_cell.strip() == target_status and "hyperlink" in link_cell:
                 links.append(link_cell["hyperlink"])
@@ -304,10 +302,11 @@ def get_wikisource_links(
 
 
 if __name__ == "__main__":
-    SPREADSHEET_ID = "1PM9H3gDJ02Rbt_vz0uKDCOh2LB_ibjb-WMtq_e-02bk"
+    SPREADSHEET_ID = "1vtQ_aCDN1Y9jbwmJEE48aIgPauRvheFgYF6X1xKieMo"
     CREDS_PATH = "my-credentials.json"
+    range_rows = "ལས་ཀ་དངོས་གཞི།!G48:J48"
 
-    valid_links = get_wikisource_links(SPREADSHEET_ID, CREDS_PATH)
+    valid_links = get_wikisource_links(SPREADSHEET_ID, CREDS_PATH, range_rows)
     print("Links Received")
 
     for link in valid_links:

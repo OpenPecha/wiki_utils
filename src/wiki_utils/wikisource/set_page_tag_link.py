@@ -16,7 +16,11 @@ SAFE_PAGE_SIZE = int(2 * 1024 * 1024 * 0.9)  # 1.9MB safety buffer
 
 
 def split_by_page_blocks(text):
-    matches = list(re.finditer(r"(\[\[Page:[^\|\]]+\|Page no:\s*\d+\]\])", text))
+    matches = list(
+        re.finditer(
+            r"(\[\[Page:[^\|\]]+\|Page(?:\s*no:)?\s*\d+\]\])", text, re.IGNORECASE
+        )
+    )
 
     if not matches:
         return [text]
@@ -37,7 +41,7 @@ def extract_page_numbers(blocks):
     """
     nums = []
     for block in blocks:
-        match = re.search(r"Page no:\s*(\d+)", block)
+        match = re.search(r"Page(?:\s*no:)?\s*(\d+)", block, re.IGNORECASE)
         if match:
             nums.append(int(match.group(1)))
     return nums
@@ -110,7 +114,9 @@ def update_mainspace_page_with_links(
     original_text = page.text
 
     # 🔍 Check if it's already converted
-    link_pattern = re.compile(r"\[\[Page:[^/\|\]]+/\d+\|Page no: \d+\]\]")
+    link_pattern = re.compile(
+        r"\[\[Page:[^/\|\]]+/\d+\|Page(?:\s*no:)?\s*\d+\]\]", re.IGNORECASE
+    )
     if link_pattern.search(original_text):
         logger.info(
             f"Page '{mainpage_title}' already contains page links in final format. Skipping..."
@@ -121,7 +127,9 @@ def update_mainspace_page_with_links(
         num = match.group(1)
         return f"[[Page:{index_title}/{num}|Page no: {num}]]"
 
-    updated_text = re.sub(r"Page no:\s*(\d+)", link_replacer, original_text)
+    updated_text = re.sub(
+        r"Page(?:\s*no:)?\s*(\d+)", link_replacer, original_text, flags=re.IGNORECASE
+    )
 
     if original_text == updated_text:
         logger.info("No changes needed.")
@@ -244,9 +252,9 @@ if __name__ == "__main__":
     range_rows = it is basically the range that you want from googlesheet.
     """
 
-    SPREADSHEET_ID = "1jDZMBuGKGc9x3SXuwVo3ix60fDUccXgHPsAgFmUNCIw"
+    SPREADSHEET_ID = "1vtQ_aCDN1Y9jbwmJEE48aIgPauRvheFgYF6X1xKieMo"
     CREDS_PATH = "my-credentials.json"
-    range_rows = "ལས་ཀ་དངོས་གཞི།!G39:J39"
+    range_rows = "ཡིག་བརྒྱའི་ལས་གཞི།!G6:J6"
 
     valid_pairs = get_wikisource_links(SPREADSHEET_ID, CREDS_PATH, range_rows)
 
