@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+src/wiki_utils/wikisource/my-credentials.json
+src/wiki_utils/wikisource/pywikibot-Ganga4364.lwp
+src/wiki_utils/wikisource/user-config.py
+src/wiki_utils/wikisource/user-password.py
+src/wiki_utils/wikisource/wikisource_links.csv
+
+.DS_Store
