@@ -15,6 +15,7 @@ class TestETextUpload(unittest.TestCase):
         # Create a temporary file for testing parse_text_file
         self.temp_dir = tempfile.TemporaryDirectory()
         self.test_file_path = os.path.join(self.temp_dir.name, "test_text.txt")
+        print(f"test_file_path: {self.test_file_path}")
         with open(self.test_file_path, "w", encoding="utf-8") as f:
             f.write(
                 "Page no: 1\n"
@@ -32,6 +33,11 @@ class TestETextUpload(unittest.TestCase):
     def test_parse_text_file(self):
         """Test parsing a text file into page-by-page dict"""
         result = parse_text_file(self.test_file_path)
+        print(f"Type of test_file_path: {type(self.test_file_path)}")
+        print(f"Contents of {self.test_file_path}:")
+        with open(self.test_file_path, encoding="utf-8") as f:
+            print(f.read())
+        print(result)
 
         self.assertEqual(len(result), 2)
         self.assertIn("1", result)

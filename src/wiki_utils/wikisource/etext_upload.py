@@ -34,85 +34,85 @@ def login_to_wikisource() -> pywikibot.Site:
 
 
 # --- Helper Functions ---
-# def parse_text_file(text_file_path: str) -> Dict[str, str]:
-#     """
-#     Parse the text file into a dict: {page_number: text}
-#     Assumes format:
-#         Page no: N\n<text>\n...\nPage no: M\n<text>\n...
-#     """
-#     page_texts = {}
-#     current_page = None
-#     current_lines: list[str] = []
-#     with open(text_file_path, encoding="utf-8") as f:
-#         for line in f:
-#             line = line.rstrip("\n")
-
-#             if line.strip().startswith("Page no:"):
-#                 # Save previous page
-#                 if current_page is not None:
-#                     page_texts[str(current_page)] = "\n".join(current_lines).strip()
-#                 # Start new page
-#                 try:
-#                     current_page = line.split(":", 1)[1].strip()
-#                 except IndexError:
-#                     current_page = None
-#                 current_lines = []
-#             else:
-#                 # Remove text within parentheses
-#                 line = re.sub(r"\([^)]*\)", "", line)
-#                 current_lines.append(line)
-#         # Save last page
-#         if current_page is not None:
-#             page_texts[str(current_page)] = "\n".join(current_lines).strip()
-#     return page_texts
-
-
 def parse_text_file(text_file_path: str) -> Dict[str, str]:
     """
     Parse the text file into a dict: {page_number: text}
     Assumes format:
-        <number> <text>
-        <text continued>
-        <number> <text>
-        ...
+        Page no: N\n<text>\n...\nPage no: M\n<text>\n...
     """
     page_texts = {}
     current_page = None
     current_lines: list[str] = []
-    # Use [0-9]+ instead of \d+ to match only ASCII numbers
-    page_num_re = re.compile(r"^\s*([0-9]+)\s+(.*)")
-    with open(text_file_path, encoding="utf-8-sig") as f:
+    with open(text_file_path, encoding="utf-8") as f:
         for line in f:
             line = line.rstrip("\n")
-            # Check if the line starts with a number and a space
-            match = page_num_re.match(line)
-            if match:
-                # Save the previous page's content
+
+            if line.strip().startswith("Page no:"):
+                # Save previous page
                 if current_page is not None:
                     page_texts[str(current_page)] = "\n".join(current_lines).strip()
-                # Start a new page
-                current_page = match.group(1)
-                line_text = match.group(2)
-                current_lines = [line_text]
+                # Start new page
+                try:
+                    current_page = line.split(":", 1)[1].strip()
+                except IndexError:
+                    current_page = None
+                current_lines = []
             else:
-                # This is just a content line; add it to the current page's lines
+                # Remove text within parentheses
+                line = re.sub(r"\([^)]*\)", "", line)
                 current_lines.append(line)
-        # Save the last page
+        # Save last page
         if current_page is not None:
             page_texts[str(current_page)] = "\n".join(current_lines).strip()
-
-    # save in json to understand.
-    text_file_path_obj = Path(text_file_path)
-    base_name = text_file_path_obj.stem
-    json_file_name = base_name + ".json"
-    data_dir = Path(__file__).parent / "data"
-    target_folder = data_dir / "json_Saver"
-    target_folder.mkdir(parents=True, exist_ok=True)
-    json_file_path = target_folder / json_file_name
-    with open(json_file_path, "w", encoding="utf-8") as jf:
-        json.dump(page_texts, jf, ensure_ascii=False, indent=2)
-
     return page_texts
+
+
+# def parse_text_file(text_file_path: str) -> Dict[str, str]:
+#     """
+#     Parse the text file into a dict: {page_number: text}
+#     Assumes format:
+#         <number> <text>
+#         <text continued>
+#         <number> <text>
+#         ...
+#     """
+#     page_texts = {}
+#     current_page = None
+#     current_lines: list[str] = []
+#     # Use [0-9]+ instead of \d+ to match only ASCII numbers
+#     page_num_re = re.compile(r"^\s*([0-9]+)\s+(.*)")
+#     with open(text_file_path, encoding="utf-8-sig") as f:
+#         for line in f:
+#             line = line.rstrip("\n")
+#             # Check if the line starts with a number and a space
+#             match = page_num_re.match(line)
+#             if match:
+#                 # Save the previous page's content
+#                 if current_page is not None:
+#                     page_texts[str(current_page)] = "\n".join(current_lines).strip()
+#                 # Start a new page
+#                 current_page = match.group(1)
+#                 line_text = match.group(2)
+#                 current_lines = [line_text]
+#             else:
+#                 # This is just a content line; add it to the current page's lines
+#                 current_lines.append(line)
+#         # Save the last page
+#         if current_page is not None:
+#             page_texts[str(current_page)] = "\n".join(current_lines).strip()
+
+#     # save in json to understand.
+#     text_file_path_obj = Path(text_file_path)
+#     base_name = text_file_path_obj.stem
+#     json_file_name = base_name + ".json"
+#     data_dir = Path(__file__).parent / "data"
+#     target_folder = data_dir / "json_Saver"
+#     target_folder.mkdir(parents=True, exist_ok=True)
+#     json_file_path = target_folder / json_file_name
+#     with open(json_file_path, "w", encoding="utf-8") as jf:
+#         json.dump(page_texts, jf, ensure_ascii=False, indent=2)
+
+#     return page_texts
 
 
 def get_page_titles(
