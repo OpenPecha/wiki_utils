@@ -33,12 +33,6 @@ class TestETextUpload(unittest.TestCase):
     def test_parse_text_file(self):
         """Test parsing a text file into page-by-page dict"""
         result = parse_text_file(self.test_file_path)
-        print(f"Type of test_file_path: {type(self.test_file_path)}")
-        print(f"Contents of {self.test_file_path}:")
-        with open(self.test_file_path, encoding="utf-8") as f:
-            print(f.read())
-        print(result)
-
         self.assertEqual(len(result), 2)
         self.assertIn("1", result)
         self.assertIn("2", result)
