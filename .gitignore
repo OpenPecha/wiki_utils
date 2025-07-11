@@ -142,3 +142,8 @@ src/wiki_utils/wikisource/user-password.py
 src/wiki_utils/wikisource/wikisource_links.csv
 
 .DS_Store
+
+src/wiki_utils/wikisource/wikisource_links.csv
+src/wiki_utils/wikisource/upload_log.csv
+src/wiki_utils/wikisource/data
+src/wiki_utils/wikisource/cache
