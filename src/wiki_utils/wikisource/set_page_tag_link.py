@@ -130,17 +130,17 @@ def update_mainspace_page_with_links(
 
     def link_replacer(match):
         num = match.group(1)
-        return f"[[Page:{index_title}/{num}|Page: {num}]]"
+        return f"[[Page:{index_title}/{num}|Page no: {num}]]"
 
     # this is for the pattern matching when encountered only number (numerical value).
-    updated_text = re.sub(
-        r"^([0-9]+)(?=\s)", link_replacer, original_text, flags=re.MULTILINE
-    )
+    # updated_text = re.sub(
+    #     r"^([0-9]+)(?=\s)", link_replacer, original_text, flags=re.MULTILINE
+    # )
 
     # below is for the pattern matching of Page no: N or Page or page.
-    # updated_text = re.sub(
-    #     r"Page(?:\s*no:)?\s*(\d+)", link_replacer, original_text, flags=re.IGNORECASE
-    # )
+    updated_text = re.sub(
+        r"Page(?:\s*no:)?\s*(\d+)", link_replacer, original_text, flags=re.IGNORECASE
+    )
 
     if original_text == updated_text:
         logger.info("No changes needed.")
