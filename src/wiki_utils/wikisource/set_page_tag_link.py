@@ -41,7 +41,7 @@ def extract_page_numbers(blocks):
     """
     nums = []
     for block in blocks:
-        match = re.search(r"Page(?:\s*no:)?\s*(\d+)", block, re.IGNORECASE)
+        match = re.search(r"Page(?:\s*no:)?\s*([0-9]+)", block, re.IGNORECASE)
         if match:
             nums.append(int(match.group(1)))
     return nums
@@ -103,6 +103,7 @@ def update_mainspace_page_with_links(
 ):
     """
     Replace 'Page no: N' in a mainspace page with links to the corresponding Page:Index/N.
+    converts into link format like this -> [[Page:སྤྱོད་འཇུག་གི་འགྲེལ་བཤད་རྒྱལ་སྲས་ཡོན་ཏན་བུམ་བཟང་།.pdf/1|Page: 1]] ..text..
     """
     site = pywikibot.Site(site_code, family)
     page = pywikibot.Page(site, mainpage_title)
@@ -113,30 +114,46 @@ def update_mainspace_page_with_links(
 
     original_text = page.text
 
-    # 🔍 Check if it's already converted
+    # Check if the page already contains links in the final format
     link_pattern = re.compile(
-        r"\[\[Page:[^/\|\]]+/\d+\|Page(?:\s*no:)?\s*\d+\]\]", re.IGNORECASE
+        r"\[\[Page:[^/\|\]]+/[0-9]+\|Page(?:\s*no:)?\s*[0-9]+\]\]", re.IGNORECASE
     )
+
     if link_pattern.search(original_text):
         logger.info(
             f"Page '{mainpage_title}' already contains page links in final format. Skipping..."
         )
         return
+    # You can comment out or remove line 118 to 126 but keep in mind if the link is given in the page already then it will try to give the link again and making the structure giberish.
+
+    print(original_text[:3000])
 
     def link_replacer(match):
         num = match.group(1)
-        return f"[[Page:{index_title}/{num}|Page no: {num}]]"
+        return f"[[Page:{index_title}/{num}|Page: {num}]]"
 
+    # this is for the pattern matching when encountered only number (numerical value).
     updated_text = re.sub(
-        r"Page(?:\s*no:)?\s*(\d+)", link_replacer, original_text, flags=re.IGNORECASE
+        r"^([0-9]+)(?=\s)", link_replacer, original_text, flags=re.MULTILINE
     )
+
+    # below is for the pattern matching of Page no: N or Page or page.
+    # updated_text = re.sub(
+    #     r"Page(?:\s*no:)?\s*(\d+)", link_replacer, original_text, flags=re.IGNORECASE
+    # )
 
     if original_text == updated_text:
         logger.info("No changes needed.")
         return
 
-    # 📝 Try saving directly first
     page.text = updated_text
+
+    if dry_run:
+        print(
+            "\n\n------------🔍 [DRY RUN] Would save main page with page links:-------\n\n"
+        )
+        print(updated_text[:5000])
+        return
 
     try:
         page.save(summary="Bot: Converted 'Page no:' references to page links.")
@@ -145,31 +162,32 @@ def update_mainspace_page_with_links(
         logger.error(f"\n\n⚠️ Initial save failed: {e}\n\n")
         logger.info("\n\n📦 Attempting to split content into subpages...\n\n")
 
-        # 🔀 Split and save subpages if main page is too large
-        blocks = split_by_page_blocks(updated_text)
-        subpages = split_and_save_subpages(mainpage_title, blocks, site, dry_run=False)
-
-        if subpages:
-            transclusion_text = "\n\n".join(
-                f"{{{{:{title}}}}}" for title in subpages  # noqa: E231
-            )
-            page.text = transclusion_text
-
-            if dry_run:
-                print(
-                    "\n\n------------🔍 [DRY RUN] Would save main page with subpage transclusions:-------\n\n"
-                )
-                print(transclusion_text[:2000])
-                return
-            try:
-                page.save(
-                    summary="Bot: Split oversized main page and added subpage transclusions."
-                )
-                logger.info("✅ Main page split and saved with transclusions.")
-            except Exception as final_err:
-                logger.error(
-                    f"\n\n❌ Final save failed after splitting: {final_err}\n\n"
-                )
+        # 🔀 Subpaging is temporarily disabled due to encountered exception.
+        # blocks = split_by_page_blocks(updated_text)
+        # subpages = split_and_save_subpages(mainpage_title, blocks, site, dry_run=False)
+        # if subpages:
+        #     transclusion_text = "\n\n".join(
+        #         f"{{{{:{title}}}}}" for title in subpages  # noqa: E231
+        #     )
+        #     page.text = transclusion_text
+        #     if dry_run:
+        #         print(
+        #             "\n\n------------🔍 [DRY RUN] Would save main page with subpage transclusions:-------\n\n"
+        #         )
+        #         print(transclusion_text[:2000])
+        #         return
+        #     try:
+        #         page.save(
+        #             summary="Bot: Split oversized main page and added subpage transclusions."
+        #         )
+        #         logger.info("✅ Main page split and saved with transclusions.")
+        #     except Exception as final_err:
+        #         logger.error(
+        #             f"\n\n❌ Final save failed after splitting: {final_err}\n\n"
+        #         )
+        logger.error(
+            "Subpaging is temporarily commented out. If You want to use it first understand and then implemented it. always enable dry_tun = True before executing anything as a final."
+        )
 
 
 def get_wikisource_links(
@@ -179,10 +197,9 @@ def get_wikisource_links(
     output_file="wikisource_links.csv",
 ):
     """
-    Extracts hyperlinks from 'Text File link' (G) and 'Wikisource Link' (H) columns
-    only if BOTH are present and 'Proofreading statue' (J) == 'ཞུ་དག་བྱས་ཟིན།'.
-    You can change the value of range_rows to get more or less rows.
-    Doing this because of some links are set up differently. not in uniform order.
+    Extracts hyperlinks from Multiple Columns Present in GSheet.
+    why? - because of subpages are created so the loop must run through them all.
+    retrieve the text file links in the columns and its corresponding wikisource link
 
     Args:
         sheet_id (str): Google Sheet ID
@@ -193,8 +210,6 @@ def get_wikisource_links(
     Returns:
         List of tuples: [(wikisource_link, text_file_link), ...]
     """
-
-    target_status = "ཞུ་དག་བྱས་ཟིན།"
 
     creds = service_account.Credentials.from_service_account_file(
         creds_path, scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]
@@ -208,32 +223,31 @@ def get_wikisource_links(
 
     rows = result["sheets"][0]["data"][0]["rowData"]
     links = []
+    # change the value in range as per your need. H,I,J column, thus length is 3.
+    for i in range(3):
+        for row in rows:
+            try:
+                values = row["values"]
+                text_file_cell = values[i]  # H,I,J
+                wikisource_cell = values[3]  # K
+                if "hyperlink" not in wikisource_cell:
+                    continue
 
-    for row in rows:
-        try:
-            values = row["values"]
-            text_file_cell = values[0]  # Column G
-            wikisource_cell = values[1]  # Column H
-            status_cell = values[3].get("formattedValue", "")  # Column J
-
-            if (
-                status_cell.strip() == target_status
-                and "hyperlink" in text_file_cell
-                and "hyperlink" in wikisource_cell
-            ):
-                text_file_link = text_file_cell["hyperlink"]
                 wikisource_link = wikisource_cell["hyperlink"]
-                links.append((wikisource_link, text_file_link))
 
-        except (KeyError, IndexError):
-            continue
+                if "hyperlink" in text_file_cell:
+                    text_file_link = text_file_cell["hyperlink"]
+                    links.append((text_file_link, wikisource_link))
+
+            except (KeyError, IndexError):
+                continue
 
     # Save to CSV. so that you can understand the output. Not much of a use in code logic
     with open(output_file, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["Wikisource Link", "Text File Link"])
-        for ws_link, txt_link in links:
-            writer.writerow([ws_link, txt_link])
+        writer.writerow(["Wikisource Text Link", "Wikisource Link"])
+        for text_link, ws_link in links:
+            writer.writerow([text_link, ws_link])
 
     print(f"✅ {len(links)} valid link pairs saved to '{output_file}'.")
 
@@ -254,11 +268,11 @@ if __name__ == "__main__":
 
     SPREADSHEET_ID = "1vtQ_aCDN1Y9jbwmJEE48aIgPauRvheFgYF6X1xKieMo"
     CREDS_PATH = "my-credentials.json"
-    range_rows = "ཡིག་བརྒྱའི་ལས་གཞི།!G6:J6"
+    range_rows = "སྤྱོད་འཇུག་གི་ལས་གཞི།!H4:K8"
 
     valid_pairs = get_wikisource_links(SPREADSHEET_ID, CREDS_PATH, range_rows)
 
-    for ws_link, txt_link in valid_pairs:
+    for txt_link, ws_link in valid_pairs:
         index_title = unquote(ws_link.split("Index:")[-1])
         mainpage_title = unquote(txt_link.split("/wiki/")[-1])
         # NEW: Extract only the text before '.pdf'
