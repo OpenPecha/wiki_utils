@@ -14,7 +14,7 @@ def replace_braces_with_ref_tag(text):
     """
 
     # Pattern: (word1,word2) with optional spaces and Tibetan punctuation
-    pattern = r"\(([^,\)]+),([^\)]+)\)"
+    pattern = r"\(\s*([^\),，\u201A]+?)\s*[,，\u201A]\s*([^\)]+?)\s*\)"
 
     def replacer(match):
         word1 = match.group(1).strip()
@@ -159,13 +159,16 @@ if __name__ == "__main__":
     mainpage_title = "རྒྱལ་བ་ཀཿཐོག་པའི་གྲུབ་མཆོག་རྣམས་ཀྱི་ཉམས་བཞེས་ཁྲིད་ཆེན་བཅུ་གསུམ་གྱི་པོད་དང་པོ།"
     """
 
-    SPREADSHEET_ID = "1jDZMBuGKGc9x3SXuwVo3ix60fDUccXgHPsAgFmUNCIw"
+    SPREADSHEET_ID = "1vtQ_aCDN1Y9jbwmJEE48aIgPauRvheFgYF6X1xKieMo"
     CREDS_PATH = "my-credentials.json"
     range_GSheet = "ལས་ཀ་དངོས་གཞི།!G38:J48"
 
     valid_pairs = get_wikisource_links(SPREADSHEET_ID, CREDS_PATH, range_GSheet)
 
-    for ws_link, txt_link in valid_pairs:
+    print(f"✅ {len(valid_pairs)} valid link pairs loaded.")
+
+    # change the txt_link and ws_link position according to the wikisource_link.csv file that you create.
+    for txt_link, ws_link in valid_pairs:
         mainpage_title = unquote(txt_link.split("/wiki/")[-1])
         print(f"\n\n👍🏻👍🏻👍🏻{mainpage_title}👍🏻👍🏻👍🏻\n\n")
         update_mainspace_page_with_ref_tag(
