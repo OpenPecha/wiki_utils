@@ -165,8 +165,6 @@ if __name__ == "__main__":
 
     valid_pairs = get_wikisource_links(SPREADSHEET_ID, CREDS_PATH, range_GSheet)
 
-    print(f"✅ {len(valid_pairs)} valid link pairs loaded.")
-
     # change the txt_link and ws_link position according to the wikisource_link.csv file that you create.
     for txt_link, ws_link in valid_pairs:
         mainpage_title = unquote(txt_link.split("/wiki/")[-1])
